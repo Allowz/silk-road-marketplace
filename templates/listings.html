@@ -2,6 +2,73 @@
 
 {% block title %}{{ site_name }} | Listings{% endblock %}
 {% block description %}Browse and filter listings on {{ site_name }}.{% endblock %}
+{% block head %}
+<style>
+  .listings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+
+  @media (min-width: 768px) {
+    .listings-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.1rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .listings-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+  }
+
+  .listing-card-content {
+    padding: 0.9rem;
+  }
+
+  .listing-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+  }
+
+  .listing-actions > * {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .listing-title {
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+
+  .listing-copy {
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+
+  @media (min-width: 640px) {
+    .listing-card-content {
+      padding: 1.1rem;
+    }
+
+    .listing-actions {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .listing-title {
+      font-size: 1.03rem;
+    }
+
+    .listing-copy {
+      font-size: 0.86rem;
+    }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
 <main class="mx-auto max-w-7xl px-4 py-10 lg:px-6">
@@ -76,25 +143,25 @@
 
   <section class="mt-8">
     {% if listings %}
-    <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="listings-grid">
       {% for item in listings %}
       <article class="surface-panel card-lift overflow-hidden rounded-3xl shadow-sm">
         <img src="{{ url_for('static', filename=item.image) }}" alt="{{ item.title }}" class="listing-image">
-        <div class="p-5">
+        <div class="listing-card-content">
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-dark_green">{{ item.category }}</p>
-          <h2 class="mt-2 text-lg font-semibold text-slate-100">{{ item.title }}</h2>
-          <p class="mt-1 text-sm text-slate-300">{{ item.location }}</p>
-          <p class="mt-2 text-sm font-semibold text-slate-100">{{ item.price }}</p>
-          <p class="mt-1 text-xs text-slate-400">
+          <h2 class="listing-title mt-2 font-semibold text-slate-100">{{ item.title }}</h2>
+          <p class="listing-copy mt-1 text-slate-300">{{ item.location }}</p>
+          <p class="listing-copy mt-2 font-semibold text-slate-100">{{ item.price }}</p>
+          <p class="listing-copy mt-1 text-slate-400">
             Seller:
             <a class="underline decoration-slate-600 hover:text-emerald-300" href="{{ url_for('store_page', username=item.seller_username) }}">{{ item.seller_profile.display_name }}</a>
             | {{ item.seller_rating }} star ({{ item.seller_reviews_count }})
           </p>
-          <p class="mt-1 text-xs {% if item.seller_verified %}text-emerald-300{% else %}text-amber-300{% endif %}">
+          <p class="listing-copy mt-1 {% if item.seller_verified %}text-emerald-300{% else %}text-amber-300{% endif %}">
             Vendor: {{ "Verified" if item.seller_verified else "Unverified" }}
           </p>
-          <p class="mt-2 text-sm text-slate-300">{{ item.description }}</p>
-          <div class="mt-4 flex flex-wrap gap-2">
+          <p class="listing-copy mt-2 text-slate-300">{{ item.description }}</p>
+          <div class="listing-actions mt-4">
             <a href="{{ url_for('listing_detail', slug=item.slug) }}" class="inline-flex rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-emerald-500">
               Open listing
             </a>
@@ -102,7 +169,7 @@
             <form method="post" action="{{ url_for('cart_add', slug=item.slug) }}">
               <input type="hidden" name="qty" value="1">
               <input type="hidden" name="next" value="{{ request.full_path }}">
-              <button type="submit" class="inline-flex rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+              <button type="submit" class="inline-flex w-full rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
                 Add to cart
               </button>
             </form>
