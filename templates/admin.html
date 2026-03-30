@@ -1,0 +1,386 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard | {{ site_name }}{% endblock %}
+
+{% block content %}
+<main class="mx-auto max-w-7xl px-4 py-8 lg:px-6">
+  <section class="surface-panel rounded-2xl p-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <p class="text-xs uppercase tracking-[0.22em] text-cyan-300">Admin Only</p>
+        <h1 class="mt-2 text-2xl font-semibold text-white">Platform Control Center</h1>
+        <p class="mt-1 text-slate-400">Manage users, listings, payouts, security, promotions, analytics, and platform settings.</p>
+      </div>
+      <div class="rounded-xl border border-slate-700 bg-black px-4 py-3 text-sm text-slate-300">
+        <p>Total Users: <span class="font-semibold text-white">{{ analytics.total_users }}</span></p>
+        <p>Active Users: <span class="font-semibold text-white">{{ analytics.active_users }}</span></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div class="surface-panel-soft rounded-xl p-4"><p class="text-slate-400">Listings</p><p class="text-2xl font-semibold">{{ analytics.total_listings }}</p></div>
+    <div class="surface-panel-soft rounded-xl p-4"><p class="text-slate-400">Pending Review</p><p class="text-2xl font-semibold">{{ analytics.pending_listings }}</p></div>
+    <div class="surface-panel-soft rounded-xl p-4"><p class="text-slate-400">Sales Volume</p><p class="text-2xl font-semibold">N {{ analytics.sales_volume }}</p></div>
+    <div class="surface-panel-soft rounded-xl p-4"><p class="text-slate-400">Platform Revenue</p><p class="text-2xl font-semibold">N {{ analytics.platform_revenue }}</p></div>
+  </section>
+
+  <section class="mt-6 surface-panel rounded-2xl p-5">
+    <div class="flex flex-wrap gap-2 text-sm">
+      {% for tab in ["overview", "users", "listings", "payments", "moderation", "analytics", "settings", "security", "communication", "marketing"] %}
+      <a href="{{ url_for('admin_dashboard', section=tab) }}" class="rounded-full border px-4 py-2 {{ 'border-cyan-500 text-cyan-300 bg-cyan-900/20' if section == tab else 'border-slate-700 text-slate-300 bg-black/50' }}">
+        {{ tab|title }}
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% if section == "overview" %}
+  <section class="mt-6 grid gap-6 lg:grid-cols-2">
+    <article class="surface-panel rounded-2xl p-5">
+      <h2 class="text-lg font-semibold">Quick Health</h2>
+      <ul class="mt-3 space-y-2 text-sm text-slate-300">
+        <li>Open Reports: <span class="font-semibold text-white">{{ analytics.open_reports }}</span></li>
+        <li>Suspicious Transactions: <span class="font-semibold text-white">{{ analytics.suspicious_transactions }}</span></li>
+        <li>Conversion Rate: <span class="font-semibold text-white">{{ analytics.conversion_rate }}%</span></li>
+      </ul>
+      <div class="mt-4">
+        <h3 class="text-sm font-semibold text-white">Top Categories</h3>
+        <ul class="mt-2 space-y-1 text-sm text-slate-300">
+          {% for name, count in analytics.top_categories %}
+          <li>{{ name }}: {{ count }}</li>
+          {% else %}
+          <li>No category data yet.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </article>
+    <article class="surface-panel rounded-2xl p-5">
+      <h2 class="text-lg font-semibold">Traffic Sources</h2>
+      <ul class="mt-3 space-y-2 text-sm text-slate-300">
+        {% for source, value in analytics.traffic_sources.items() %}
+        <li>{{ source }}: {{ value }}</li>
+        {% else %}
+        <li>No traffic data configured.</li>
+        {% endfor %}
+      </ul>
+    </article>
+  </section>
+  {% endif %}
+
+  {% if section == "users" %}
+  <section class="mt-6 surface-panel rounded-2xl p-5 overflow-x-auto">
+    <h2 class="text-lg font-semibold">User Management</h2>
+    <table class="mt-4 min-w-full text-sm">
+      <thead class="text-slate-400">
+        <tr><th class="px-2 py-2 text-left">User</th><th class="px-2 py-2 text-left">Role</th><th class="px-2 py-2 text-left">Status</th><th class="px-2 py-2 text-left">KYC</th><th class="px-2 py-2 text-left">Last Login</th><th class="px-2 py-2 text-left">IP</th><th class="px-2 py-2 text-left">Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr class="border-t border-slate-800">
+          <td class="px-2 py-3">{{ user.username }}</td>
+          <td class="px-2 py-3">{{ user.role }}</td>
+          <td class="px-2 py-3">{{ user.status }}</td>
+          <td class="px-2 py-3">{{ "Verified" if user.seller_verified else "Pending" }}</td>
+          <td class="px-2 py-3">{{ user.last_login or "-" }}</td>
+          <td class="px-2 py-3">{{ user.last_ip or "-" }}</td>
+          <td class="px-2 py-3">
+            <div class="flex flex-wrap gap-2">
+              {% for act in ["activate", "suspend", "ban", "verify_seller", "force_logout", "reset_password"] %}
+              <form method="post" action="{{ url_for('admin_action') }}">
+                <input type="hidden" name="scope" value="user">
+                <input type="hidden" name="action" value="{{ act }}">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <button class="rounded border border-slate-700 bg-black px-2 py-1 text-xs hover:border-cyan-500">{{ act.replace("_", " ") }}</button>
+              </form>
+              {% endfor %}
+              <form method="post" action="{{ url_for('admin_action') }}" class="flex gap-2">
+                <input type="hidden" name="scope" value="user">
+                <input type="hidden" name="action" value="set_role">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <select name="role" class="rounded border border-slate-700 bg-black px-2 py-1 text-xs">
+                  <option value="admin">admin</option>
+                  <option value="seller">seller</option>
+                  <option value="buyer">buyer</option>
+                </select>
+                <button class="rounded border border-slate-700 bg-black px-2 py-1 text-xs hover:border-cyan-500">Set Role</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  {% if section == "listings" %}
+  <section class="mt-6 grid gap-6 xl:grid-cols-2">
+    <article class="surface-panel rounded-2xl p-5">
+      <h2 class="text-lg font-semibold">Listings Control</h2>
+      <form method="post" action="{{ url_for('admin_action') }}" class="mt-3 flex flex-wrap gap-2">
+        <input type="hidden" name="scope" value="listings_bulk">
+        <input type="hidden" name="action" value="approve">
+        <input type="text" name="selected_slugs_text" placeholder="slug1,slug2,slug3" class="w-full rounded border border-slate-700 bg-black px-3 py-2">
+        <button class="rounded bg-cyan-600 px-3 py-2 text-sm font-semibold text-white">Bulk Approve</button>
+      </form>
+      <div class="mt-4 space-y-3 max-h-[430px] overflow-y-auto">
+        {% for listing in listings %}
+        <div class="rounded-xl border border-slate-800 bg-black p-3">
+          <p class="font-semibold text-white">{{ listing.title }}</p>
+          <p class="text-xs text-slate-400">{{ listing.slug }} • {{ listing.category }} • {{ listing.status }}</p>
+          <div class="mt-2 flex flex-wrap gap-2">
+            {% for act in ["approve", "reject", "flag", "remove_flag", "feature", "unfeature", "delete"] %}
+            <form method="post" action="{{ url_for('admin_action') }}">
+              <input type="hidden" name="scope" value="listing">
+              <input type="hidden" name="action" value="{{ act }}">
+              <input type="hidden" name="slug" value="{{ listing.slug }}">
+              <button class="rounded border border-slate-700 bg-black px-2 py-1 text-xs hover:border-cyan-500">{{ act.replace("_", " ") }}</button>
+            </form>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </article>
+    <article class="surface-panel rounded-2xl p-5">
+      <h2 class="text-lg font-semibold">Category Management</h2>
+      <form method="post" action="{{ url_for('admin_action') }}" class="mt-3 flex gap-2">
+        <input type="hidden" name="scope" value="category">
+        <input type="hidden" name="action" value="create">
+        <input type="text" name="name" placeholder="New category" class="flex-1 rounded border border-slate-700 bg-black px-3 py-2">
+        <button class="rounded bg-cyan-600 px-3 py-2 text-sm font-semibold text-white">Add</button>
+      </form>
+      <div class="mt-4 space-y-2">
+        {% for category in categories %}
+        <div class="flex flex-wrap items-center gap-2 rounded border border-slate-800 bg-black p-2">
+          <span class="min-w-32">{{ category }}</span>
+          <form method="post" action="{{ url_for('admin_action') }}" class="flex gap-2">
+            <input type="hidden" name="scope" value="category">
+            <input type="hidden" name="action" value="rename">
+            <input type="hidden" name="old_name" value="{{ category }}">
+            <input type="text" name="new_name" placeholder="Rename" class="rounded border border-slate-700 bg-black px-2 py-1 text-xs">
+            <button class="rounded border border-slate-700 bg-black px-2 py-1 text-xs hover:border-cyan-500">Rename</button>
+          </form>
+          <form method="post" action="{{ url_for('admin_action') }}">
+            <input type="hidden" name="scope" value="category">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="name" value="{{ category }}">
+            <button class="rounded border border-rose-700 bg-black px-2 py-1 text-xs text-rose-300">Delete</button>
+          </form>
+        </div>
+        {% endfor %}
+      </div>
+    </article>
+  </section>
+  {% endif %}
+
+  {% if section == "payments" %}
+  <section class="mt-6 surface-panel rounded-2xl p-5">
+    <h2 class="text-lg font-semibold">Payments & Transactions</h2>
+    <div class="mt-4 space-y-2">
+      {% for tx in transactions %}
+      <div class="rounded border border-slate-800 bg-black p-3">
+        <p class="font-semibold">TX-{{ tx.id }} • N {{ tx.amount }} • {{ tx.status }}</p>
+        <p class="text-xs text-slate-400">Commission: {{ tx.commission or 0 }} • Risk: {{ tx.risk_score or 0 }}</p>
+        <div class="mt-2 flex flex-wrap gap-2">
+          {% for act in ["approve", "hold", "release", "refund", "mark_suspicious"] %}
+          <form method="post" action="{{ url_for('admin_action') }}">
+            <input type="hidden" name="scope" value="transaction">
+            <input type="hidden" name="action" value="{{ act }}">
+            <input type="hidden" name="tx_id" value="{{ tx.id }}">
+            <button class="rounded border border-slate-700 bg-black px-2 py-1 text-xs hover:border-cyan-500">{{ act.replace("_", " ") }}</button>
+          </form>
+          {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <p class="text-sm text-slate-400">No transactions yet. Seed `data/transactions.json` to start escrow operations.</p>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if section == "moderation" %}
+  <section class="mt-6 surface-panel rounded-2xl p-5">
+    <h2 class="text-lg font-semibold">Moderation & Reports</h2>
+    <div class="mt-4 space-y-2">
+      {% for report in reports %}
+      <div class="rounded border border-slate-800 bg-black p-3">
+        <p class="font-semibold">{{ report.type|title }} report #{{ report.id }} • {{ report.status }}</p>
+        <p class="text-xs text-slate-400">Target: {{ report.target }} • Reason: {{ report.reason }}</p>
+        <div class="mt-2 flex flex-wrap gap-2">
+          {% for act in ["resolve", "dismiss", "escalate"] %}
+          <form method="post" action="{{ url_for('admin_action') }}">
+            <input type="hidden" name="scope" value="report">
+            <input type="hidden" name="action" value="{{ act }}">
+            <input type="hidden" name="report_id" value="{{ report.id }}">
+            <button class="rounded border border-slate-700 bg-black px-2 py-1 text-xs hover:border-cyan-500">{{ act }}</button>
+          </form>
+          {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <p class="text-sm text-slate-400">No reports at the moment.</p>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if section == "analytics" %}
+  <section class="mt-6 grid gap-6 lg:grid-cols-2">
+    <article class="surface-panel rounded-2xl p-5">
+      <h2 class="text-lg font-semibold">Revenue & Sales</h2>
+      <ul class="mt-3 space-y-2 text-sm text-slate-300">
+        <li>Sales Volume: N {{ analytics.sales_volume }}</li>
+        <li>Platform Revenue: N {{ analytics.platform_revenue }}</li>
+        <li>Conversion Rate: {{ analytics.conversion_rate }}%</li>
+      </ul>
+    </article>
+    <article class="surface-panel rounded-2xl p-5">
+      <h2 class="text-lg font-semibold">User & Catalog Growth</h2>
+      <ul class="mt-3 space-y-2 text-sm text-slate-300">
+        <li>Total Users: {{ analytics.total_users }}</li>
+        <li>Active Users: {{ analytics.active_users }}</li>
+        <li>Approved Listings: {{ analytics.approved_listings }}</li>
+        <li>Pending Listings: {{ analytics.pending_listings }}</li>
+      </ul>
+    </article>
+  </section>
+  {% endif %}
+
+  {% if section == "settings" %}
+  <section class="mt-6 surface-panel rounded-2xl p-5">
+    <h2 class="text-lg font-semibold">Platform Settings</h2>
+    <form method="post" action="{{ url_for('admin_action') }}" class="mt-4 grid gap-3 md:grid-cols-2">
+      <input type="hidden" name="scope" value="settings">
+      <input type="hidden" name="action" value="save">
+      <input type="text" name="site_name" value="{{ settings.site_name }}" placeholder="Site name" class="rounded border border-slate-700 bg-black px-3 py-2">
+      <input type="number" step="0.1" name="commission_percent" value="{{ settings.commission_percent }}" placeholder="Commission %" class="rounded border border-slate-700 bg-black px-3 py-2">
+      <input type="text" name="payment_gateway" value="{{ settings.payment_gateway }}" placeholder="Payment gateway" class="rounded border border-slate-700 bg-black px-3 py-2">
+      <input type="text" name="email_provider" value="{{ settings.email_provider }}" placeholder="Email provider" class="rounded border border-slate-700 bg-black px-3 py-2">
+      <input type="text" name="sms_provider" value="{{ settings.sms_provider }}" placeholder="SMS provider" class="rounded border border-slate-700 bg-black px-3 py-2">
+      <input type="number" name="rate_limit_per_minute" value="{{ settings.rate_limit_per_minute }}" placeholder="Rate limit / min" class="rounded border border-slate-700 bg-black px-3 py-2">
+      <input type="text" name="geo_restrictions" value="{{ settings.geo_restrictions|join(', ') }}" placeholder="Geo restrictions (comma separated)" class="rounded border border-slate-700 bg-black px-3 py-2 md:col-span-2">
+      <input type="text" name="blacklist_keywords" value="{{ settings.blacklist_keywords|join(', ') }}" placeholder="Blacklist keywords (comma separated)" class="rounded border border-slate-700 bg-black px-3 py-2 md:col-span-2">
+      <label class="flex items-center gap-2"><input type="checkbox" name="require_admin_2fa" {% if settings.require_admin_2fa %}checked{% endif %}> Require admin 2FA</label>
+      <label class="flex items-center gap-2"><input type="checkbox" name="escrow_enabled" {% if settings.escrow_enabled %}checked{% endif %}> Escrow enabled</label>
+      <label class="flex items-center gap-2"><input type="checkbox" name="multi_vendor_payout_automation" {% if settings.multi_vendor_payout_automation %}checked{% endif %}> Multi-vendor payouts</label>
+      <label class="flex items-center gap-2"><input type="checkbox" name="ai_fraud_detection" {% if settings.ai_fraud_detection %}checked{% endif %}> AI fraud detection</label>
+      <label class="flex items-center gap-2"><input type="checkbox" name="newsletter_enabled" {% if settings.newsletter_enabled %}checked{% endif %}> Newsletter enabled</label>
+      <label class="flex items-center gap-2"><input type="checkbox" name="announcement_enabled" {% if settings.announcement_enabled %}checked{% endif %}> Announcements enabled</label>
+      <div class="md:col-span-2">
+        <button class="rounded bg-cyan-600 px-4 py-2 font-semibold text-white">Save Settings</button>
+      </div>
+    </form>
+  </section>
+  {% endif %}
+
+  {% if section == "security" %}
+  <section class="mt-6 grid gap-6 lg:grid-cols-2">
+    <article class="surface-panel rounded-2xl p-5">
+      <h2 class="text-lg font-semibold">Backup & Restore</h2>
+      <div class="mt-3 flex gap-3">
+        <form method="post" action="{{ url_for('admin_action') }}">
+          <input type="hidden" name="scope" value="backup">
+          <input type="hidden" name="action" value="create">
+          <button class="rounded bg-cyan-600 px-4 py-2 text-sm font-semibold text-white">Create Backup</button>
+        </form>
+        <form method="post" action="{{ url_for('admin_action') }}">
+          <input type="hidden" name="scope" value="backup">
+          <input type="hidden" name="action" value="restore_latest">
+          <button class="rounded border border-slate-700 bg-black px-4 py-2 text-sm font-semibold">Restore Latest</button>
+        </form>
+      </div>
+    </article>
+    <article class="surface-panel rounded-2xl p-5">
+      <h2 class="text-lg font-semibold">Admin Activity Logs</h2>
+      <div class="mt-3 max-h-72 space-y-2 overflow-y-auto text-xs text-slate-300">
+        {% for row in activity %}
+        <div class="rounded border border-slate-800 bg-black p-2">
+          <p>{{ row.timestamp }} • {{ row.actor }} • {{ row.action }}</p>
+          <p class="text-slate-500">{{ row.target }} • {{ row.ip }}</p>
+        </div>
+        {% else %}
+        <p>No logs yet.</p>
+        {% endfor %}
+      </div>
+    </article>
+  </section>
+  {% endif %}
+
+  {% if section == "communication" %}
+  <section class="mt-6 grid gap-6 lg:grid-cols-2">
+    <article class="surface-panel rounded-2xl p-5">
+      <h2 class="text-lg font-semibold">Announcements</h2>
+      <form method="post" action="{{ url_for('admin_action') }}" class="mt-3 space-y-2">
+        <input type="hidden" name="scope" value="announcement">
+        <input type="hidden" name="action" value="create">
+        <input type="text" name="title" placeholder="Announcement title" class="w-full rounded border border-slate-700 bg-black px-3 py-2">
+        <textarea name="message" rows="3" placeholder="Announcement message" class="w-full rounded border border-slate-700 bg-black px-3 py-2"></textarea>
+        <button class="rounded bg-cyan-600 px-3 py-2 text-sm font-semibold text-white">Send</button>
+      </form>
+      <div class="mt-3 space-y-2">
+        {% for item in announcements %}
+        <div class="rounded border border-slate-800 bg-black p-2 text-sm">
+          <p class="font-semibold">{{ item.title }}</p>
+          <p class="text-slate-400">{{ item.message }}</p>
+          <form method="post" action="{{ url_for('admin_action') }}" class="mt-2">
+            <input type="hidden" name="scope" value="announcement">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="announcement_id" value="{{ item.id }}">
+            <button class="rounded border border-rose-700 bg-black px-2 py-1 text-xs text-rose-300">Delete</button>
+          </form>
+        </div>
+        {% else %}
+        <p class="text-sm text-slate-400">No announcements yet.</p>
+        {% endfor %}
+      </div>
+    </article>
+    <article class="surface-panel rounded-2xl p-5">
+      <h2 class="text-lg font-semibold">Notification Controls</h2>
+      <p class="mt-3 text-sm text-slate-400">Use Settings to manage email/SMS providers, newsletter toggles, and announcement visibility.</p>
+    </article>
+  </section>
+  {% endif %}
+
+  {% if section == "marketing" %}
+  <section class="mt-6 surface-panel rounded-2xl p-5">
+    <h2 class="text-lg font-semibold">Promotions & Marketing</h2>
+    <form method="post" action="{{ url_for('admin_action') }}" class="mt-3 grid gap-2 md:grid-cols-3">
+      <input type="hidden" name="scope" value="promotion">
+      <input type="hidden" name="action" value="create">
+      <input type="text" name="code" placeholder="Coupon code" class="rounded border border-slate-700 bg-black px-3 py-2">
+      <input type="text" name="discount" placeholder="Discount (%)" class="rounded border border-slate-700 bg-black px-3 py-2">
+      <input type="text" name="banner_text" placeholder="Banner text" class="rounded border border-slate-700 bg-black px-3 py-2">
+      <div class="md:col-span-3">
+        <button class="rounded bg-cyan-600 px-3 py-2 text-sm font-semibold text-white">Create Promotion</button>
+      </div>
+    </form>
+    <div class="mt-4 space-y-2">
+      {% for promo in promotions %}
+      <div class="rounded border border-slate-800 bg-black p-3">
+        <p class="font-semibold">{{ promo.code }} • {{ promo.discount }}% • {{ "Active" if promo.active else "Inactive" }}</p>
+        <p class="text-xs text-slate-400">{{ promo.banner_text }}</p>
+        <div class="mt-2 flex gap-2">
+          <form method="post" action="{{ url_for('admin_action') }}">
+            <input type="hidden" name="scope" value="promotion">
+            <input type="hidden" name="action" value="toggle">
+            <input type="hidden" name="promotion_id" value="{{ promo.id }}">
+            <button class="rounded border border-slate-700 bg-black px-2 py-1 text-xs hover:border-cyan-500">Toggle</button>
+          </form>
+          <form method="post" action="{{ url_for('admin_action') }}">
+            <input type="hidden" name="scope" value="promotion">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="promotion_id" value="{{ promo.id }}">
+            <button class="rounded border border-rose-700 bg-black px-2 py-1 text-xs text-rose-300">Delete</button>
+          </form>
+        </div>
+      </div>
+      {% else %}
+      <p class="text-sm text-slate-400">No promotions yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</main>
+{% endblock %}

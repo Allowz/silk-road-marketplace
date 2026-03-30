@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site_name }} | Listings{% endblock %}
+{% block description %}Browse and filter listings on {{ site_name }}.{% endblock %}
+
+{% block content %}
+<main class="mx-auto max-w-7xl px-4 py-10 lg:px-6">
+  <section class="surface-panel rounded-3xl p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.25em] text-dark_green">Listings</p>
+        <h1 class="mt-2 text-3xl font-bold text-slate-100">Find what you need</h1>
+      </div>
+      <p class="text-sm text-slate-300">
+        {{ listings|length }} result{{ '' if listings|length == 1 else 's' }}
+        {% if selected_category %}in {{ selected_category }}{% endif %}
+      </p>
+    </div>
+
+    <form action="{{ url_for('listings_page') }}" method="get" class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div>
+        <label for="q" class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Search</label>
+        <input id="q" name="q" value="{{ query }}" placeholder="Search title, category, location..." class="h-12 w-full rounded-2xl border border-slate-700 bg-black px-4 text-sm text-slate-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-900">
+      </div>
+      <div>
+        <label for="category" class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Category</label>
+        <select id="category" name="category" class="h-12 w-full rounded-2xl border border-slate-700 bg-black px-4 text-sm text-slate-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-900">
+          <option value="">All categories</option>
+          {% for category in categories %}
+          <option value="{{ category }}" {% if category == selected_category %}selected{% endif %}>{{ category }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="location" class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Location</label>
+        <select id="location" name="location" class="h-12 w-full rounded-2xl border border-slate-700 bg-black px-4 text-sm text-slate-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-900">
+          <option value="">All locations</option>
+          {% for location in locations %}
+          <option value="{{ location }}" {% if location == selected_location %}selected{% endif %}>{{ location }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Price Range (N)</label>
+        <div class="grid grid-cols-2 gap-2">
+          <input name="min_price" value="{{ min_price }}" placeholder="Min" class="h-12 w-full rounded-2xl border border-slate-700 bg-black px-4 text-sm text-slate-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-900">
+          <input name="max_price" value="{{ max_price }}" placeholder="Max" class="h-12 w-full rounded-2xl border border-slate-700 bg-black px-4 text-sm text-slate-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-900">
+        </div>
+      </div>
+      <div>
+        <label for="date_posted" class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Date Posted</label>
+        <select id="date_posted" name="date_posted" class="h-12 w-full rounded-2xl border border-slate-700 bg-black px-4 text-sm text-slate-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-900">
+          <option value="">Any time</option>
+          <option value="24h" {% if selected_date_posted == "24h" %}selected{% endif %}>Last 24 hours</option>
+          <option value="7d" {% if selected_date_posted == "7d" %}selected{% endif %}>Last 7 days</option>
+          <option value="30d" {% if selected_date_posted == "30d" %}selected{% endif %}>Last 30 days</option>
+          <option value="90d" {% if selected_date_posted == "90d" %}selected{% endif %}>Last 90 days</option>
+        </select>
+      </div>
+
+      <div class="md:col-span-2 xl:col-span-4 flex flex-wrap items-center gap-3">
+        <button type="submit" class="h-12 rounded-2xl bg-emerald-600 px-5 font-semibold text-white transition hover:bg-emerald-500">
+          Apply filters
+        </button>
+        <a href="{{ url_for('listings_page') }}" class="h-12 rounded-2xl border border-slate-700 bg-slate-900 px-5 text-sm font-medium text-slate-200 inline-flex items-center transition hover:border-emerald-500 hover:text-emerald-300">
+          Reset all
+        </a>
+        {% if selected_category or selected_location or min_price or max_price or selected_date_posted or query %}
+        <span class="inline-flex rounded-full border border-emerald-800 bg-emerald-950/40 px-3 py-1 text-xs text-emerald-200">
+          Smart filter mode active
+        </span>
+        {% endif %}
+      </div>
+    </form>
+  </section>
+
+  <section class="mt-8">
+    {% if listings %}
+    <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      {% for item in listings %}
+      <article class="surface-panel card-lift overflow-hidden rounded-3xl shadow-sm">
+        <img src="{{ url_for('static', filename=item.image) }}" alt="{{ item.title }}" class="listing-image">
+        <div class="p-5">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-dark_green">{{ item.category }}</p>
+          <h2 class="mt-2 text-lg font-semibold text-slate-100">{{ item.title }}</h2>
+          <p class="mt-1 text-sm text-slate-300">{{ item.location }}</p>
+          <p class="mt-2 text-sm font-semibold text-slate-100">{{ item.price }}</p>
+          <p class="mt-1 text-xs text-slate-400">
+            Seller:
+            <a class="underline decoration-slate-600 hover:text-emerald-300" href="{{ url_for('store_page', username=item.seller_username) }}">{{ item.seller_profile.display_name }}</a>
+            | {{ item.seller_rating }} star ({{ item.seller_reviews_count }})
+          </p>
+          <p class="mt-1 text-xs {% if item.seller_verified %}text-emerald-300{% else %}text-amber-300{% endif %}">
+            Vendor: {{ "Verified" if item.seller_verified else "Unverified" }}
+          </p>
+          <p class="mt-2 text-sm text-slate-300">{{ item.description }}</p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <a href="{{ url_for('listing_detail', slug=item.slug) }}" class="inline-flex rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-emerald-500">
+              Open listing
+            </a>
+            {% if is_authenticated %}
+            <form method="post" action="{{ url_for('cart_add', slug=item.slug) }}">
+              <input type="hidden" name="qty" value="1">
+              <input type="hidden" name="next" value="{{ request.full_path }}">
+              <button type="submit" class="inline-flex rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+                Add to cart
+              </button>
+            </form>
+            {% endif %}
+            <a href="{{ url_for('listing_detail', slug=item.slug) }}#chat" class="inline-flex rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+              Chat
+            </a>
+            <a href="{{ url_for('listing_detail', slug=item.slug) }}#reviews" class="inline-flex rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+              Reviews
+            </a>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <article class="surface-panel rounded-3xl p-8 text-center shadow-sm">
+      <h2 class="text-2xl font-bold text-slate-100">No listings found</h2>
+      <p class="mt-2 text-sm text-slate-300">Try a different keyword or remove the category filter.</p>
+      <a href="{{ url_for('listings_page') }}" class="mt-5 inline-flex rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-500">
+        Clear filters
+      </a>
+    </article>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

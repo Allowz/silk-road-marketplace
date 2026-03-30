@@ -1,0 +1,32 @@
+{
+  "site_name": "SILK ROAD",
+  "logo_path": "frontend/images/silk-road-logo.png",
+  "commission_percent": 5.0,
+  "escrow_enabled": true,
+  "multi_vendor_payout_automation": true,
+  "ai_fraud_detection": true,
+  "geo_restrictions": [],
+  "require_admin_2fa": true,
+  "rate_limit_per_minute": 120,
+  "payment_gateway": "Manual",
+  "email_provider": "Local",
+  "sms_provider": "",
+  "api_keys": {
+    "payments": "",
+    "email": "",
+    "sms": ""
+  },
+  "traffic_sources": {
+    "Direct": 62,
+    "Search": 25,
+    "Social": 13
+  },
+  "blacklist_keywords": [
+    "weapon",
+    "drugs",
+    "counterfeit"
+  ],
+  "announcement_enabled": true,
+  "newsletter_enabled": true,
+  "dark_mode": true
+}

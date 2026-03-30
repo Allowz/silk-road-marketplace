@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "order_ref": "ORD-000001",
+    "buyer_username": "admin",
+    "customer": {
+      "full_name": "Alao Tosi",
+      "email": "tosiworthyalao@gmail.com",
+      "phone": "+2348063288510",
+      "address": "no 3 salami close ushafa",
+      "city": "Abuja",
+      "notes": ""
+    },
+    "items": [
+      {
+        "slug": "electronics-and-gadgets-spotlight",
+        "title": "Electronics and Gadgets Spotlight",
+        "seller_username": "admin",
+        "qty": 1,
+        "unit_price_label": "N 485,000.00",
+        "unit_price_value": 485000.0,
+        "line_total_label": "N 485,000.00",
+        "line_total_value": 485000.0,
+        "image": "uploads/new/listings/electronics/electronics-and-gadgets-spotlight/image.webp"
+      }
+    ],
+    "subtotal": 485000.0,
+    "subtotal_label": "N 485,000.00",
+    "payment_method": "paystack",
+    "payment_status": "pending",
+    "status": "pending_payment",
+    "created_at": "2026-03-30T09:26:51Z",
+    "updated_at": "2026-03-30T09:26:51Z"
+  }
+]

@@ -1,0 +1,304 @@
+[
+  {
+    "timestamp": "2026-03-29T02:17:37Z",
+    "actor": "system",
+    "action": "login_failed",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T02:17:49Z",
+    "actor": "admin",
+    "action": "admin_category_action",
+    "target": "categories",
+    "ip": "127.0.0.1",
+    "meta": {
+      "action": "create"
+    }
+  },
+  {
+    "timestamp": "2026-03-29T02:18:45Z",
+    "actor": "admin",
+    "action": "login_success",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T02:18:54Z",
+    "actor": "admin",
+    "action": "login_success",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T02:20:17Z",
+    "actor": "system",
+    "action": "login_failed",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T02:20:26Z",
+    "actor": "system",
+    "action": "login_failed",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T02:20:42Z",
+    "actor": "system",
+    "action": "login_failed",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T02:21:40Z",
+    "actor": "admin",
+    "action": "login_success",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T02:22:38Z",
+    "actor": "admin",
+    "action": "admin_settings_update",
+    "target": "settings",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T02:23:24Z",
+    "actor": "admin",
+    "action": "listing_created",
+    "target": "listing:misofem",
+    "ip": "127.0.0.1",
+    "meta": {
+      "status": "approved",
+      "flagged": false
+    }
+  },
+  {
+    "timestamp": "2026-03-29T02:23:49Z",
+    "actor": "admin",
+    "action": "logout",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T02:23:54Z",
+    "actor": "fransin",
+    "action": "login_success",
+    "target": "user:fransin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T02:45:36Z",
+    "actor": "fransin",
+    "action": "logout",
+    "target": "user:fransin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T02:46:45Z",
+    "actor": "fransin",
+    "action": "login_success",
+    "target": "user:fransin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T02:46:49Z",
+    "actor": "fransin",
+    "action": "logout",
+    "target": "user:fransin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T02:46:53Z",
+    "actor": "admin",
+    "action": "login_success",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T02:46:57Z",
+    "actor": "admin",
+    "action": "logout",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T03:27:05Z",
+    "actor": "admin",
+    "action": "admin_user_action",
+    "target": "user:2",
+    "ip": "127.0.0.1",
+    "meta": {
+      "action": "set_role"
+    }
+  },
+  {
+    "timestamp": "2026-03-29T03:27:17Z",
+    "actor": "admin",
+    "action": "admin_user_action",
+    "target": "user:2",
+    "ip": "127.0.0.1",
+    "meta": {
+      "action": "set_role"
+    }
+  },
+  {
+    "timestamp": "2026-03-29T03:37:03Z",
+    "actor": "admin",
+    "action": "login_success",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T11:23:51Z",
+    "actor": "admin",
+    "action": "logout",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T11:23:55Z",
+    "actor": "fransin",
+    "action": "login_success",
+    "target": "user:fransin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T11:39:28Z",
+    "actor": "fransin",
+    "action": "seller_review_submitted",
+    "target": "seller:admin",
+    "ip": "127.0.0.1",
+    "meta": {
+      "reviewer": "fransin",
+      "rating": 2
+    }
+  },
+  {
+    "timestamp": "2026-03-29T11:50:12Z",
+    "actor": "fransin",
+    "action": "logout",
+    "target": "user:fransin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T12:03:11Z",
+    "actor": "admin",
+    "action": "login_success",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T12:07:58Z",
+    "actor": "admin",
+    "action": "logout",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T00:46:50Z",
+    "actor": "admin",
+    "action": "login_success",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-29T00:47:27Z",
+    "actor": "admin",
+    "action": "logout",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-30T09:12:12Z",
+    "actor": "admin",
+    "action": "cart_add",
+    "target": "listing:featured-auto-marketplace-preview",
+    "ip": "127.0.0.1",
+    "meta": {
+      "qty": 1
+    }
+  },
+  {
+    "timestamp": "2026-03-30T09:12:12Z",
+    "actor": "admin",
+    "action": "order_created",
+    "target": "order:ORD-000001",
+    "ip": "127.0.0.1",
+    "meta": {
+      "payment_method": "manual",
+      "amount": 14500000.0
+    }
+  },
+  {
+    "timestamp": "2026-03-30T09:25:54Z",
+    "actor": "admin",
+    "action": "login_success",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-30T09:26:02Z",
+    "actor": "admin",
+    "action": "cart_add",
+    "target": "listing:electronics-and-gadgets-spotlight",
+    "ip": "127.0.0.1",
+    "meta": {
+      "qty": 1
+    }
+  },
+  {
+    "timestamp": "2026-03-30T09:26:51Z",
+    "actor": "admin",
+    "action": "order_created",
+    "target": "order:ORD-000001",
+    "ip": "127.0.0.1",
+    "meta": {
+      "payment_method": "paystack",
+      "amount": 485000.0
+    }
+  },
+  {
+    "timestamp": "2026-03-30T09:42:23Z",
+    "actor": "admin",
+    "action": "logout",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  },
+  {
+    "timestamp": "2026-03-30T09:42:35Z",
+    "actor": "admin",
+    "action": "login_success",
+    "target": "user:admin",
+    "ip": "127.0.0.1",
+    "meta": {}
+  }
+]

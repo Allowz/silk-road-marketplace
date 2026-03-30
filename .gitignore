@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local secrets and runtime files
+.env
+.env.local
+tmp_cookies.txt
+
+# Local database/session artifacts
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+
+# Local backup snapshots
+backups/

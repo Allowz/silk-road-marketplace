@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site_name }} | {{ listing.title }}{% endblock %}
+{% block description %}{{ listing.description }}{% endblock %}
+{% block head %}
+<style>
+  .star-rating {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    gap: 6px;
+    align-items: center;
+    justify-content: flex-end;
+    height: 48px;
+    padding: 0 12px;
+    border: 1px solid #374151;
+    border-radius: 14px;
+    background: #000;
+  }
+
+  .star-rating input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .star-rating label {
+    font-size: 24px;
+    line-height: 1;
+    color: #4b5563;
+    cursor: pointer;
+    transition: color 0.15s ease;
+    user-select: none;
+  }
+
+  .star-rating label:hover,
+  .star-rating label:hover ~ label {
+    color: #facc15;
+  }
+
+  .star-rating input:checked ~ label {
+    color: #facc15;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="mx-auto max-w-7xl px-4 py-10 lg:px-6">
+  <a href="{{ url_for('listings_page') }}" class="inline-flex rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+    Back to listings
+  </a>
+
+  <section class="surface-panel mt-6 grid gap-8 rounded-3xl p-6 shadow-sm lg:grid-cols-2">
+    <div class="overflow-hidden rounded-3xl border border-slate-700">
+      <img src="{{ url_for('static', filename=listing.image) }}" alt="{{ listing.title }}" class="listing-image lg:aspect-[4/3]">
+    </div>
+    <div class="flex flex-col">
+      <p class="text-xs font-semibold uppercase tracking-[0.25em] text-dark_green">{{ listing.category }}</p>
+      <h1 class="mt-2 text-3xl font-bold text-slate-100">{{ listing.title }}</h1>
+      <p class="mt-2 text-sm text-slate-300">{{ listing.location }}</p>
+      {% if listing.price %}
+      <p class="mt-4 text-2xl font-bold text-slate-100">{{ listing.price }}</p>
+      {% endif %}
+      <p class="mt-5 text-sm leading-7 text-slate-200">{{ listing.description }}</p>
+
+      <div class="surface-panel-soft mt-8 rounded-2xl p-4 text-sm text-slate-200">
+        <p class="font-semibold text-slate-100">Seller Profile</p>
+        <p class="mt-1">Seller: <a class="underline decoration-slate-600 hover:text-emerald-300" href="{{ url_for('store_page', username=listing.seller_username) }}">{{ listing.seller_profile.display_name }}</a></p>
+        <p class="mt-1">Rating: {{ seller_rating }} / 5 ({{ seller_reviews_count }} reviews)</p>
+        <p class="mt-1">Location: {{ listing.seller_profile.location }}</p>
+        <p class="mt-1 {% if listing.seller_verified %}text-emerald-300{% else %}text-amber-300{% endif %}">Vendor: {{ "Verified" if listing.seller_verified else "Unverified" }}</p>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="{{ url_for('listings_page', category=listing.category) }}" class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+          More in {{ listing.category }}
+        </a>
+        <a href="{{ url_for('store_page', username=listing.seller_username) }}" class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+          Visit seller store
+        </a>
+        {% if is_authenticated %}
+        <form method="post" action="{{ url_for('cart_add', slug=listing.slug) }}">
+          <input type="hidden" name="qty" value="1">
+          <input type="hidden" name="next" value="{{ request.full_path }}">
+          <button type="submit" class="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-500">
+            Add to cart
+          </button>
+        </form>
+        <a href="{{ url_for('checkout_page') }}" class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+          Checkout now
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <section id="chat" class="surface-panel mt-6 rounded-3xl p-6 shadow-sm">
+    <h2 class="text-xl font-semibold text-slate-100">Chat with seller</h2>
+    {% if is_authenticated %}
+    <form method="post" action="{{ url_for('send_listing_chat', slug=listing.slug) }}" class="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
+      <input type="text" name="message" minlength="2" required placeholder="Type your message to the seller..." class="h-12 rounded-2xl border border-slate-700 bg-black px-4 text-sm text-slate-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-900">
+      <button type="submit" class="h-12 rounded-2xl bg-emerald-600 px-5 font-semibold text-white transition hover:bg-emerald-500">Send</button>
+    </form>
+    {% else %}
+    <p class="mt-2 text-sm text-slate-300">Please <a class="underline" href="{{ url_for('login') }}">log in</a> to message this seller.</p>
+    {% endif %}
+    <div class="mt-4 space-y-2">
+      {% for msg in chat_messages %}
+      <div class="rounded-xl border border-slate-800 bg-black p-3 text-sm">
+        <p class="font-semibold text-slate-200">{{ msg.sender }} <span class="font-normal text-slate-500">to {{ msg.recipient }}</span></p>
+        <p class="mt-1 text-slate-300">{{ msg.message }}</p>
+        <p class="mt-1 text-xs text-slate-500">{{ msg.created_at }}</p>
+      </div>
+      {% else %}
+      <p class="text-sm text-slate-400">No chat history yet for this listing.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section id="reviews" class="surface-panel mt-6 rounded-3xl p-6 shadow-sm">
+    <h2 class="text-xl font-semibold text-slate-100">Seller Reviews</h2>
+    {% if is_authenticated %}
+    <form method="post" action="{{ url_for('add_seller_review', username=listing.seller_username) }}" class="mt-4 grid gap-3 md:grid-cols-[220px_1fr_auto]">
+      <input type="hidden" name="listing_slug" value="{{ listing.slug }}">
+      <fieldset class="star-rating" aria-label="Rate seller">
+        <input id="star-5" type="radio" name="rating" value="5" required>
+        <label for="star-5" title="5 stars">&#9733;</label>
+        <input id="star-4" type="radio" name="rating" value="4">
+        <label for="star-4" title="4 stars">&#9733;</label>
+        <input id="star-3" type="radio" name="rating" value="3">
+        <label for="star-3" title="3 stars">&#9733;</label>
+        <input id="star-2" type="radio" name="rating" value="2">
+        <label for="star-2" title="2 stars">&#9733;</label>
+        <input id="star-1" type="radio" name="rating" value="1">
+        <label for="star-1" title="1 star">&#9733;</label>
+      </fieldset>
+      <input type="text" name="comment" minlength="4" required placeholder="Write your review..." class="h-12 rounded-2xl border border-slate-700 bg-black px-4 text-sm text-slate-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-900">
+      <button type="submit" class="h-12 rounded-2xl bg-emerald-600 px-5 font-semibold text-white transition hover:bg-emerald-500">Submit review</button>
+    </form>
+    {% else %}
+    <p class="mt-2 text-sm text-slate-300">Please <a class="underline" href="{{ url_for('login') }}">log in</a> to review this seller.</p>
+    {% endif %}
+    <div class="mt-4 space-y-2">
+      {% for review in seller_reviews %}
+      <div class="rounded-xl border border-slate-800 bg-black p-3 text-sm">
+        <p class="font-semibold text-slate-200">{{ review.reviewer }} - {{ review.rating }}/5</p>
+        <p class="mt-1 text-slate-300">{{ review.comment }}</p>
+        <p class="mt-1 text-xs text-slate-500">{{ review.created_at }}</p>
+      </div>
+      {% else %}
+      <p class="text-sm text-slate-400">No reviews yet for this seller.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section id="similar-ads" class="mt-6">
+    <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+      <h2 class="text-2xl font-bold text-slate-100">Similar Ads</h2>
+      <a href="{{ url_for('listings_page', category=listing.category) }}" class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+        Explore more
+      </a>
+    </div>
+    <div class="mt-4 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      {% for item in similar_ads %}
+      <article class="surface-panel card-lift overflow-hidden rounded-3xl shadow-sm">
+        <img src="{{ url_for('static', filename=item.image) }}" alt="{{ item.title }}" class="listing-image">
+        <div class="p-5">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-dark_green">{{ item.category }}</p>
+          <h3 class="mt-2 text-lg font-semibold text-slate-100">{{ item.title }}</h3>
+          <p class="mt-1 text-sm text-slate-300">{{ item.location }}</p>
+          <p class="mt-1 text-xs {% if item.seller_verified %}text-emerald-300{% else %}text-amber-300{% endif %}">
+            Vendor: {{ "Verified" if item.seller_verified else "Unverified" }}
+          </p>
+          <a href="{{ url_for('listing_detail', slug=item.slug) }}" class="mt-4 inline-flex rounded-full bg-emerald-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-emerald-500">
+            View details
+          </a>
+        </div>
+      </article>
+      {% else %}
+      <p class="text-sm text-slate-400">No similar ads found yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+</main>
+{% endblock %}

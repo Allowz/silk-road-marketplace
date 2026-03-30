@@ -1,0 +1,27 @@
+SILK ROAD UPLOAD GUIDE
+======================
+
+Goal:
+You only choose a picture when posting.
+The backend auto-organizes files by category and listing.
+
+How it works now:
+1) Open /post-ad
+2) Fill title + category + other fields
+3) Upload image file
+4) Submit
+
+Automatic folder structure:
+static/uploads/new/listings/<category-slug>/<listing-slug>/image.<ext>
+
+Example:
+- Category: Electronics -> category-slug: electronics
+- Title: "Used iPhone 13" -> listing-slug: used-iphone-13
+- Saved image:
+  static/uploads/new/listings/electronics/used-iphone-13/image.webp
+
+Notes:
+- Legacy numeric folders are preserved.
+- Existing listings are migrated into category folders automatically.
+- New postings always use category folders under:
+  static/uploads/new/listings/

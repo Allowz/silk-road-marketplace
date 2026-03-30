@@ -1,0 +1,33 @@
+[
+  {
+    "id": 1,
+    "username": "admin",
+    "password_hash": "scrypt:32768:8:1$kZI8DR6NjHomXbXQ$fd7e61a4d672979cbb732ede4c603b0ada56adaa4225c5d32eb108c57a9b0ba15169ed75120169a8c815abcf766d534c28513be9719f1c3c9bceb82eea5d390d",
+    "role": "admin",
+    "status": "active",
+    "seller_verified": true,
+    "session_version": 2,
+    "last_login": "2026-03-29T02:46:53Z",
+    "last_ip": "127.0.0.1"
+  },
+  {
+    "id": 2,
+    "username": "tester6707",
+    "password_hash": "scrypt:32768:8:1$10PymesnoLAMN4nx$3d65940323b2527887cbdf039064f784bde7df8f8349949f4f2a9098b2b03f7f807db47da41351bff3e7a38c00931044232e6ef1d7ae439bb39447d37fa9a3c3",
+    "role": "seller",
+    "status": "active",
+    "seller_verified": false,
+    "session_version": 1
+  },
+  {
+    "id": 3,
+    "username": "fransin",
+    "password_hash": "scrypt:32768:8:1$A6xKPTPMRM03w11b$89b68bfc0a96c9bd785a73eeff71383a85e1754fa1648685ea4ae9aa4dfc310775254dc6a4e0141a479ee215eb1c799854c87fc3fcfd580b740c5e12de3853ac",
+    "role": "seller",
+    "status": "active",
+    "seller_verified": false,
+    "session_version": 1,
+    "last_login": "2026-03-29T02:46:45Z",
+    "last_ip": "127.0.0.1"
+  }
+]

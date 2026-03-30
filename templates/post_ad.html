@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site_name }} | Post Ad{% endblock %}
+{% block description %}Create a new listing on {{ site_name }}.{% endblock %}
+
+{% block content %}
+<main class="mx-auto max-w-4xl px-4 py-10 lg:px-6">
+  <section class="surface-panel rounded-3xl p-6 shadow-sm">
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.25em] text-dark_green">Create Listing</p>
+        <h1 class="mt-2 text-3xl font-bold text-slate-100">Post a new ad</h1>
+      </div>
+      <a href="{{ url_for('listings_page') }}" class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+        View listings
+      </a>
+    </div>
+
+    <form method="post" action="{{ url_for('post_ad') }}" enctype="multipart/form-data" class="mt-8 grid gap-5">
+      <div class="grid gap-5 md:grid-cols-2">
+        <div>
+          <label for="title" class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Title</label>
+          <input id="title" name="title" required minlength="4" class="h-12 w-full rounded-2xl border border-slate-700 bg-black px-4 text-sm text-slate-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-900">
+        </div>
+        <div>
+          <label for="category" class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Category</label>
+          <select id="category" name="category" required class="h-12 w-full rounded-2xl border border-slate-700 bg-black px-4 text-sm text-slate-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-900">
+            <option value="">Select category</option>
+            {% for category in categories %}
+            <option value="{{ category }}">{{ category }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="price" class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Price</label>
+          <input id="price" name="price" placeholder="e.g. N 120,000" class="h-12 w-full rounded-2xl border border-slate-700 bg-black px-4 text-sm text-slate-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-900">
+        </div>
+        <div>
+          <label for="location" class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Location</label>
+          <input id="location" name="location" required class="h-12 w-full rounded-2xl border border-slate-700 bg-black px-4 text-sm text-slate-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-900">
+        </div>
+      </div>
+
+      <div>
+        <label for="image_file" class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Upload Listing Image</label>
+        <input id="image_file" name="image_file" type="file" accept=".jpg,.jpeg,.png,.webp" required class="h-12 w-full rounded-2xl border border-slate-700 bg-black px-3 text-sm text-slate-100 file:mr-4 file:rounded-lg file:border-0 file:bg-emerald-700 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-emerald-600">
+        <p class="mt-2 text-xs text-slate-400">When you submit, the backend creates <code>static/uploads/new/listings/&lt;category&gt;/&lt;listing-slug&gt;/</code> and saves the picture there automatically.</p>
+      </div>
+
+      <div>
+        <label for="description" class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Description</label>
+        <textarea id="description" name="description" rows="5" required minlength="10" class="w-full rounded-2xl border border-slate-700 bg-black px-4 py-3 text-sm text-slate-100 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-900"></textarea>
+      </div>
+
+      <label class="inline-flex items-center gap-2 text-sm text-slate-200">
+        <input type="checkbox" name="featured" class="rounded border-slate-600 bg-black text-emerald-500 focus:ring-emerald-600">
+        Mark as featured listing
+      </label>
+
+      <div class="flex flex-wrap gap-3">
+        <button type="submit" class="rounded-full bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500">
+          Publish Ad
+        </button>
+        <a href="{{ url_for('home') }}" class="rounded-full border border-slate-700 bg-slate-900 px-6 py-3 text-sm font-medium text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock %}

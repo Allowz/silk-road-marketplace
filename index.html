@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SILK ROAD</title>
+  <meta name="description" content="Local static preview of the recovered Marketplace Naija homepage.">
+  <meta name="robots" content="noindex,nofollow">
+  <meta property="og:title" content="SILK ROAD">
+  <meta property="og:description" content="A local static homepage rebuilt from recovered website assets.">
+  <meta property="og:image" content="./frontend/images/logo.png">
+  <link rel="icon" type="image/png" href="./frontend/images/logo.png">
+  <link rel="preload" as="style" href="./build/assets/app-CLHo1Ay8.css">
+  <link rel="preload" as="image" href="./frontend/images/logo.png">
+  <link rel="preload" as="image" href="./frontend/images/mobile-logo.png">
+  <link rel="preload" as="font" href="./assets/bootstrap-icons.woff2" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./build/assets/app-CLHo1Ay8.css">
+  <script type="module" src="./build/assets/app-BOpRU4ks.js" defer></script>
+  <style>
+    body {
+      min-height: 100vh;
+    }
+
+    .hero-shell {
+      background:
+        radial-gradient(circle at top right, rgba(181, 233, 63, 0.45), transparent 28%),
+        linear-gradient(135deg, #132611 0%, #21441a 55%, #326916 100%);
+    }
+
+    .hero-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(10px);
+    }
+
+    .preview-banner {
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      transform: translateY(-120%);
+      opacity: 0;
+    }
+
+    .preview-banner.is-visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .category-card,
+    .listing-card,
+    .feature-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .category-card:hover,
+    .listing-card:hover,
+    .feature-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .listing-image {
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      width: 100%;
+      background: linear-gradient(135deg, #e5e7eb, #f9fafb);
+    }
+
+    .feature-dot {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 9999px;
+      background: #b5e93f;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body class="bg-body text-gray-700 text-sm antialiased">
+  <div id="preview-banner" class="preview-banner fixed inset-x-0 top-4 z-50 mx-auto w-[calc(100%-2rem)] max-w-xl rounded-2xl bg-dark_green px-5 py-4 text-sm text-white shadow-2xl">
+    <div class="flex items-start gap-3">
+      <span class="feature-dot mt-1 shrink-0"></span>
+      <div class="flex-1">
+        <p class="font-semibold">Preview mode only</p>
+        <p id="preview-message" class="mt-1 text-white/85">This local homepage is wired to local files only, so account and marketplace actions stay disabled.</p>
+      </div>
+      <button id="close-preview-banner" type="button" class="rounded-full border border-white/20 px-2 py-1 text-xs text-white/90">Close</button>
+    </div>
+  </div>
+
+  <header class="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 lg:px-6">
+      <a href="#top" class="flex items-center gap-3" aria-label="Marketplace Naija local preview">
+        <img src="./frontend/images/logo.png" alt="Marketplace Naija logo" class="hidden h-12 md:block">
+        <img src="./frontend/images/mobile-logo.png" alt="Marketplace Naija mobile logo" class="h-10 md:hidden">
+        <div class="hidden md:block">
+          <p class="text-base font-semibold text-dark_green">OG store</p>
+          <p class="text-xs text-gray-500">            </p>
+        </div>
+      </a>
+
+      <nav class="hidden items-center gap-6 lg:flex">
+        <a href="#categories" class="font-medium text-gray-600 transition hover:text-dark_green">Categories</a>
+        <a href="#featured" class="font-medium text-gray-600 transition hover:text-dark_green">Featured</a>
+        <a href="#why" class="font-medium text-gray-600 transition hover:text-dark_green">Why it works</a>
+        <a href="#download" class="font-medium text-gray-600 transition hover:text-dark_green">Download</a>
+      </nav>
+
+      <div class="hidden items-center gap-3 md:flex">
+        <button type="button" data-preview-action="Signing in is not available in this local preview." class="rounded-full border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:border-dark_green hover:text-dark_green">
+          Sign in
+        </button>
+        <button type="button" data-preview-action="Posting ads needs the original backend, so this button stays in preview mode." class="rounded-full bg-dark_green px-5 py-2 font-semibold text-white shadow-sm transition hover:bg-secondary_dark">
+          Post an Ad
+        </button>
+      </div>
+
+      <button id="mobile-menu-button" type="button" class="inline-flex rounded-full border border-gray-300 p-3 text-gray-700 lg:hidden" aria-expanded="false" aria-controls="mobile-menu">
+        <span class="sr-only">Open menu</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div id="mobile-menu" class="hidden border-t border-gray-200 bg-white lg:hidden">
+      <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4">
+        <a href="#categories" class="font-medium text-gray-700">Categories</a>
+        <a href="#featured" class="font-medium text-gray-700">Featured</a>
+        <a href="#why" class="font-medium text-gray-700">Why it works</a>
+        <a href="#download" class="font-medium text-gray-700">Download</a>
+        <div class="mt-2 grid grid-cols-2 gap-3">
+          <button type="button" data-preview-action="Signing in is not available in this local preview." class="rounded-2xl border border-gray-300 px-4 py-3 font-medium text-gray-700">
+            Sign in
+          </button>
+          <button type="button" data-preview-action="Posting ads needs the original backend, so this button stays in preview mode." class="rounded-2xl bg-dark_green px-4 py-3 font-semibold text-white">
+            Post an Ad
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero-shell overflow-hidden text-white">
+      <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 lg:grid-cols-2 lg:px-6 lg:py-20">
+        <div class="flex flex-col justify-center">
+          <span class="mb-5 inline-flex w-fit rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white/80">
+            Marketplace
+          </span>
+          <h1 class="max-w-2xl text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
+            Buy and sell on my OG store
+          </h1>
+          <p class="mt-5 max-w-xl text-base leading-7 text-white/85 sm:text-lg">
+            Version 1.0
+          </p>
+
+          <div class="mt-8 grid gap-4 rounded-3xl bg-white p-4 text-gray-800 shadow-xl sm:grid-cols-[1.5fr_.8fr]">
+            <div>
+              <label for="search-query" class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">What do you need </label>
+              <input id="search-query" type="text" placeholder="Electronics, cars, fashion..." class="h-14 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 text-base outline-none focus:border-dark_green focus:ring-2 focus:ring-emerald-100">
+            </div>
+            <div class="flex items-end">
+              <button type="button" data-preview-action="Search is shown here for layout preview only. Dynamic search needs the original Laravel routes." class="h-14 w-full rounded-2xl bg-dark_green px-5 font-semibold text-white transition hover:bg-secondary_dark">
+                Search Ads
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-6 flex flex-wrap gap-3 text-sm text-white/85">
+            
+          </div>
+        </div>
+
+        <div class="grid gap-5 self-center sm:grid-cols-2">
+          <article class="hero-card rounded-3xl p-6 text-white">
+            
+        </div>
+      </div>
+    </section>
+
+    <section id="categories" class="mx-auto max-w-7xl px-4 py-14 lg:px-6">
+      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.25em] text-dark_green">Explore Categories</p>
+          <h2 class="mt-2 text-3xl font-bold text-gray-900">This is the main store page</h2>
+        </div>
+        <p class="max-w-xl text-sm leading-6 text-gray-600">           </p>
+      </div>
+
+      <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <a href="#featured" class="category-card rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+          <img src="./frontend/images/icons/car-100.png" alt="Cars icon" class="size-14">
+          <h3 class="mt-5 text-xl font-semibold text-gray-900">Vehicles</h3>
+          <p class="mt-2 text-sm leading-6 text-gray-600">Cars, transport listings, and mobility offers highlighted in the live design.</p>
+        </a>
+        <a href="#featured" class="category-card rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+          <img src="./frontend/images/icons/electronics-100.png" alt="Electronics icon" class="size-14">
+          <h3 class="mt-5 text-xl font-semibold text-gray-900">Electronics</h3>
+          <p class="mt-2 text-sm leading-6 text-gray-600">Phones, appliances, gadgets, and home electronics cards using local assets.</p>
+        </a>
+        <a href="#featured" class="category-card rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+          <img src="./frontend/images/icons/fashion-100.png" alt="Fashion icon" class="size-14">
+          <h3 class="mt-5 text-xl font-semibold text-gray-900">Fashion</h3>
+          <p class="mt-2 text-sm leading-6 text-gray-600">Clothing and style previews that preserve the original Marketplace Naija feel.</p>
+        </a>
+        <a href="#featured" class="category-card rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+          <img src="./frontend/images/icons/house-100.png" alt="Property icon" class="size-14">
+          <h3 class="mt-5 text-xl font-semibold text-gray-900">Property</h3>
+          <p class="mt-2 text-sm leading-6 text-gray-600">Homes, spaces, and rentals represented with the recovered icon library.</p>
+        </a>
+        <a href="#featured" class="category-card rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+          <img src="./frontend/images/icons/labour-100.png" alt="Services icon" class="size-14">
+          <h3 class="mt-5 text-xl font-semibold text-gray-900">Services</h3>
+          <p class="mt-2 text-sm leading-6 text-gray-600">Jobs, labour, and professional services remain visible in the local preview.</p>
+        </a>
+        <a href="#featured" class="category-card rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+          <img src="./frontend/images/icons/mobile-100.png" alt="Mobile icon" class="size-14">
+          <h3 class="mt-5 text-xl font-semibold text-gray-900">Mobile</h3>
+          <p class="mt-2 text-sm leading-6 text-gray-600">Portable devices and mobile-first listings adapted to a static preview flow.</p>
+        </a>
+        <a href="#featured" class="category-card rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+          <img src="./frontend/images/icons/food-100.png" alt="Food icon" class="size-14">
+          <h3 class="mt-5 text-xl font-semibold text-gray-900">Food</h3>
+          <p class="mt-2 text-sm leading-6 text-gray-600">Lifestyle and marketplace categories that still render cleanly on desktop and mobile.</p>
+        </a>
+        <a href="#featured" class="category-card rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+          <img src="./frontend/images/icons/workspace-100.png" alt="Workspace icon" class="size-14">
+          <h3 class="mt-5 text-xl font-semibold text-gray-900">Workspace</h3>
+          <p class="mt-2 text-sm leading-6 text-gray-600">Office, rental, and work-related categories preserved with local image files.</p>
+        </a>
+      </div>
+    </section>
+
+    <section id="featured" class="border-y border-gray-200 bg-white py-14">
+      <div class="mx-auto max-w-7xl px-4 lg:px-6">
+        <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-dark_green">Featured Listings</p>
+            <h2 class="mt-2 text-3xl font-bold text-gray-900">       </h2>
+          </div>
+          <button type="button" data-preview-action="Loading more ads is disabled in this local preview because the original API routes are not present." class="rounded-full border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:border-dark_green hover:text-dark_green">
+                          
+          </button>
+        </div>
+
+        <div class="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <article class="listing-card overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
+            <img src="./uploads/10206/conversions/69200c4b58b04-thumbnail.webp" alt="Featured vehicle preview" class="listing-image">
+            <div class="p-5">
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-dark_green">Vehicles</p>
+              <h3 class="mt-2 text-lg font-semibold text-gray-900">Featured auto marketplace preview</h3>
+              <p class="mt-2 text-sm text-gray-600">Recovered image content presented as a static card for the local homepage build.</p>
+            </div>
+          </article>
+          <article class="listing-card overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
+            <img src="./uploads/1043/conversions/68d99a3b46178-thumbnail.webp" alt="Featured electronics preview" class="listing-image">
+            <div class="p-5">
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-dark_green">Electronics</p>
+              <h3 class="mt-2 text-lg font-semibold text-gray-900">Electronics and gadgets spotlight</h3>
+              <p class="mt-2 text-sm text-gray-600">A local-only showcase card using one of the saved upload thumbnails in this folder.</p>
+            </div>
+          </article>
+          <article class="listing-card overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
+            <img src="./uploads/10693/conversions/6923f19182f89-thumbnail.webp" alt="Featured service preview" class="listing-image">
+            <div class="p-5">
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-dark_green">Services</p>
+              <h3 class="mt-2 text-lg font-semibold text-gray-900">Local services sample card</h3>
+              <p class="mt-2 text-sm text-gray-600">The original dynamic listing content is replaced by stable static markup for preview use.</p>
+            </div>
+          </article>
+          <article class="listing-card overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
+            <img src="./uploads/10812/conversions/6924b98a44ac9-thumbnail.webp" alt="Featured mobile preview" class="listing-image">
+            <div class="p-5">
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-dark_green">Mobile</p>
+              <h3 class="mt-2 text-lg font-semibold text-gray-900">Mobile deals preview layout</h3>
+              <p class="mt-2 text-sm text-gray-600">This card keeps the original homepage rhythm without relying on missing server responses.</p>
+            </div>
+          </article>
+          <article class="listing-card overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
+            <img src="./uploads/11103/conversions/69274376da480-thumbnail.webp" alt="Featured fashion preview" class="listing-image">
+            <div class="p-5">
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-dark_green">Fashion</p>
+              <h3 class="mt-2 text-lg font-semibold text-gray-900">Fashion marketplace sample</h3>
+              <p class="mt-2 text-sm text-gray-600">A curated placeholder title paired with a real local thumbnail so the grid stays populated.</p>
+            </div>
+          </article>
+          <article class="listing-card overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
+            <img src="./uploads/11118/conversions/69275cae6d8aa-thumbnail.webp" alt="Featured property preview" class="listing-image">
+            <div class="p-5">
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-dark_green">Property</p>
+              <h3 class="mt-2 text-lg font-semibold text-gray-900">Property and spaces preview</h3>
+              <p class="mt-2 text-sm text-gray-600">The local preview keeps the card layout while avoiding broken live-domain image links.</p>
+            </div>
+          </article>
+          <article class="listing-card overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
+            <img src="./uploads/116/conversions/689ee652a5f48-thumbnail.webp" alt="Featured family preview" class="listing-image">
+            <div class="p-5">
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-dark_green">Lifestyle</p>
+              <h3 class="mt-2 text-lg font-semibold text-gray-900">Lifestyle and family offers</h3>
+              <p class="mt-2 text-sm text-gray-600">A simplified local listing section that still feels close to the original marketplace homepage.</p>
+            </div>
+          </article>
+          <article class="listing-card overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
+            <img src="./uploads/11645/conversions/692d4dc240bd6-thumbnail.webp" alt="Featured workspace preview" class="listing-image">
+            <div class="p-5">
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-dark_green">Workspace</p>
+              <h3 class="mt-2 text-lg font-semibold text-gray-900">Workspace preview collection</h3>
+              <p class="mt-2 text-sm text-gray-600">Recovered media keeps the homepage visually complete even though routed pages are unavailable.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="why" class="mx-auto max-w-7xl px-4 py-14 lg:px-6">
+      <div class="grid gap-5 lg:grid-cols-3">
+        <article class="feature-card rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+          <p class="text-xs font-semibold uppercase tracking-[0.25em] text-dark_green">What changed</p>
+          <h3 class="mt-3 text-2xl font-bold text-gray-900">The placeholder file is now a working entry page.</h3>
+          <p class="mt-4 text-sm leading-6 text-gray-600">Your original `index.html` only pointed to the live domain. This version is a real local homepage wired to your saved CSS, JavaScript, icons, and upload images.</p>
+        </article>
+        <article class="feature-card rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+          <p class="text-xs font-semibold uppercase tracking-[0.25em] text-dark_green">Why localhost</p>
+          <h3 class="mt-3 text-2xl font-bold text-gray-900">Modern asset loading works better over HTTP than file paths.</h3>
+          <p class="mt-4 text-sm leading-6 text-gray-600">Serving the folder through a lightweight local server avoids broken relative paths and makes the CSS, JS, fonts, and images resolve consistently.</p>
+        </article>
+        <article class="feature-card rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+          <p class="text-xs font-semibold uppercase tracking-[0.25em] text-dark_green">Scope boundary</p>
+          <h3 class="mt-3 text-2xl font-bold text-gray-900">Marketplace actions remain disabled by design.</h3>
+          <p class="mt-4 text-sm leading-6 text-gray-600">Login, posting, filters, account state, and live search all need the original Laravel backend and database, which are not present in this recovered folder.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="download" class="bg-dark_green py-14 text-white">
+      <div class="mx-auto flex max-w-7xl flex-col gap-8 px-4 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+        <div class="max-w-2xl">
+          <p class="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Mobile Download Area</p>
+          <h2 class="mt-2 text-3xl font-bold">Recovered app download assets stay linked and visible.</h2>
+          <p class="mt-4 text-sm leading-7 text-white/80">The App Store and Play Store badges come from the saved local `frontend/images` folder, so this section renders without live-domain requests.</p>
+        </div>
+        <div class="flex flex-wrap gap-4">
+          <img class="w-32 rounded-2xl bg-white px-4 py-3 shadow-lg" alt="App Store badge" src="./frontend/images/app-store.svg">
+          <img class="w-32 rounded-2xl bg-white px-4 py-3 shadow-lg" alt="Play Store badge" src="./frontend/images/play-store.svg">
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-gray-200 bg-white">
+    <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-gray-600 md:flex-row md:items-center md:justify-between lg:px-6">
+      <div>
+        <p class="font-semibold text-dark_green">Marketplace Naija Local Preview</p>
+        <p class="mt-1">Built from recovered local files in this folder for offline-style homepage viewing through localhost.</p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a href="#top" class="rounded-full border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:border-dark_green hover:text-dark_green">Back to top</a>
+        <button type="button" data-preview-action="This rebuild focuses on the homepage only. Linked pages need the original site backend." class="rounded-full bg-gray-100 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-200">
+          Preview limitations
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  
+</body>
+</html>

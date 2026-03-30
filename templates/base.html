@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en" data-theme="{{ theme_default }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ site_name }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}Local Silk Road preview powered by Flask.{% endblock %}">
+  <meta name="robots" content="noindex,nofollow">
+  <script>
+    (function () {
+      try {
+        const saved = localStorage.getItem("silkroad-theme");
+        if (saved === "dark" || saved === "light") {
+          document.documentElement.setAttribute("data-theme", saved);
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename=logo_path) }}">
+  <link rel="preload" as="style" href="{{ url_for('static', filename='build/assets/app-CLHo1Ay8.css') }}">
+  <link rel="preload" as="image" href="{{ url_for('static', filename=logo_path) }}">
+  <link rel="preload" as="font" href="{{ url_for('static', filename='assets/bootstrap-icons.woff2') }}" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{ url_for('static', filename='build/assets/app-CLHo1Ay8.css') }}">
+  <style>
+    :root {
+      --brand-accent: #22c55e;
+      --brand-accent-soft: #14532d;
+      --bg-main: #050505;
+      --bg-elev: #0b0b0b;
+      --bg-elev-2: #121212;
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
+      --line-soft: #2b2b2b;
+    }
+
+    [data-theme="light"] {
+      --brand-accent: #16a34a;
+      --brand-accent-soft: #166534;
+      --bg-main: #cfd3d8;
+      --bg-elev: #e5e7eb;
+      --bg-elev-2: #d1d5db;
+      --text-main: #0b0b0b;
+      --text-soft: #374151;
+      --line-soft: #9ca3af;
+    }
+
+    body {
+      font-family: "Manrope", "Segoe UI", "SF Pro Text", "Inter", Arial, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 10% -20%, rgba(34, 197, 94, 0.14), transparent 34%),
+        radial-gradient(circle at 90% 2%, rgba(22, 163, 74, 0.08), transparent 32%),
+        var(--bg-main);
+      color: var(--text-main);
+      letter-spacing: 0.01em;
+    }
+
+    [data-theme="light"] body {
+      background:
+        radial-gradient(circle at 8% 0%, rgba(22, 163, 74, 0.14), transparent 36%),
+        radial-gradient(circle at 92% 2%, rgba(22, 163, 74, 0.08), transparent 34%),
+        var(--bg-main);
+    }
+
+    .hero-shell {
+      background:
+        radial-gradient(circle at top right, rgba(34, 197, 94, 0.18), transparent 30%),
+        linear-gradient(135deg, #050505 0%, #0d1110 55%, #111111 100%);
+    }
+
+    .glass-card {
+      background: rgba(10, 10, 10, 0.66);
+      border: 1px solid rgba(42, 42, 42, 0.9);
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .preview-note {
+      border-left: 3px solid #16a34a;
+      background: #0d130f;
+      color: #d1d5db;
+      border-radius: 12px;
+    }
+
+    .card-lift {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card-lift:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55);
+    }
+
+    .listing-image {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      background: linear-gradient(135deg, #121212, #060606);
+    }
+
+    .flash-wrap {
+      position: sticky;
+      top: 78px;
+      z-index: 30;
+      background: transparent;
+    }
+
+    .flash-card {
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-top: 10px;
+      border: 1px solid var(--line-soft);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+      background: var(--bg-elev);
+      color: var(--text-main);
+    }
+
+    .flash-card.error {
+      border-color: #7f1d1d;
+      color: #fecaca;
+      background: #220f14;
+    }
+
+    .flash-card.success {
+      border-color: #14532d;
+      color: #bbf7d0;
+      background: #0f1f18;
+    }
+
+    .surface-panel {
+      background: var(--bg-elev);
+      border: 1px solid var(--line-soft);
+      color: var(--text-main);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      border-radius: 20px;
+    }
+
+    .surface-panel-soft {
+      background: var(--bg-elev-2);
+      border: 1px solid var(--line-soft);
+      color: var(--text-main);
+      border-radius: 18px;
+    }
+
+    .muted-text {
+      color: var(--text-soft);
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--bg-main);
+      border-bottom: 1px solid var(--line-soft);
+      isolation: isolate;
+      transform: translateZ(0);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45) !important;
+    }
+
+    .site-header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--bg-main);
+      z-index: -1;
+    }
+
+    .brand-logo-desktop {
+      height: 58px;
+      width: auto;
+      object-fit: contain;
+      filter: none;
+      opacity: 1;
+    }
+
+    .brand-logo-mobile {
+      height: 42px;
+      width: auto;
+      object-fit: contain;
+      filter: none;
+      opacity: 1;
+    }
+
+    .brand-wordmark {
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #22c55e;
+    }
+
+    .nav-link {
+      color: var(--text-main);
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 9999px;
+      border: 1px solid transparent;
+      transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--text-main);
+      border-color: #1f3a28;
+      background: rgba(20, 46, 30, 0.38);
+    }
+
+    .nav-link-active {
+      color: #dcfce7;
+      border-color: #166534;
+      background: linear-gradient(180deg, rgba(18, 38, 25, 0.92), rgba(10, 22, 15, 0.94));
+      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.14), 0 0 12px rgba(8, 20, 12, 0.32);
+    }
+
+    .heading-tight {
+      letter-spacing: -0.02em;
+      line-height: 1.12;
+      text-wrap: balance;
+    }
+
+    .button-rhythm {
+      line-height: 1;
+      min-height: 44px;
+      padding-top: 0.72rem;
+      padding-bottom: 0.72rem;
+    }
+
+    .text-dark_green {
+      color: #cbd5e1 !important;
+    }
+
+    .rounded-3xl {
+      border-radius: 20px !important;
+    }
+
+    .rounded-2xl {
+      border-radius: 14px !important;
+    }
+
+    .bg-emerald-600,
+    .hover\:bg-emerald-500:hover,
+    .bg-emerald-700,
+    .hover\:file\:bg-emerald-600:hover::file-selector-button {
+      background: linear-gradient(180deg, #15803d 0%, #166534 100%) !important;
+      color: #f3f4f6 !important;
+    }
+
+    .bg-emerald-900\/30 {
+      background: rgba(20, 83, 45, 0.35) !important;
+    }
+
+    .border-emerald-500\/60,
+    .hover\:border-emerald-400:hover,
+    .hover\:border-emerald-500:hover {
+      border-color: #166534 !important;
+    }
+
+    .text-emerald-300,
+    .hover\:text-emerald-200:hover,
+    .hover\:text-emerald-300:hover {
+      color: #bbf7d0 !important;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #16a34a !important;
+      box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.24) !important;
+      outline: none !important;
+    }
+
+    .text-cyan-300,
+    .hover\:text-cyan-200:hover,
+    .hover\:text-cyan-300:hover {
+      color: #bbf7d0 !important;
+    }
+
+    .border-cyan-500\/50,
+    .hover\:border-cyan-400:hover {
+      border-color: #166534 !important;
+    }
+
+    .bg-cyan-900\/20 {
+      background: rgba(20, 83, 45, 0.3) !important;
+    }
+
+    .bg-slate-950 {
+      background-color: #070707 !important;
+    }
+
+    .bg-slate-900 {
+      background-color: #0d0d0d !important;
+    }
+
+    .text-slate-200 {
+      color: #d1d5db !important;
+    }
+
+    .text-slate-300 {
+      color: #b5b8be !important;
+    }
+
+    .text-slate-400 {
+      color: #8f949e !important;
+    }
+
+    .theme-toggle-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 9999px;
+      border: 1px solid var(--line-soft);
+      background: var(--bg-elev-2);
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      border-color: #166534;
+      background: rgba(20, 83, 45, 0.22);
+    }
+
+    [data-theme="light"] .bg-slate-950,
+    [data-theme="light"] .bg-slate-900,
+    [data-theme="light"] .surface-panel,
+    [data-theme="light"] .surface-panel-soft {
+      color: #0b0b0b !important;
+      border-color: #9ca3af !important;
+    }
+
+    [data-theme="light"] .bg-slate-950 {
+      background-color: #d1d5db !important;
+    }
+
+    [data-theme="light"] .bg-slate-900,
+    [data-theme="light"] .surface-panel,
+    [data-theme="light"] .surface-panel-soft {
+      background-color: #e5e7eb !important;
+    }
+
+    [data-theme="light"] .text-slate-100,
+    [data-theme="light"] .text-slate-200,
+    [data-theme="light"] .text-slate-300,
+    [data-theme="light"] .text-slate-400 {
+      color: #111827 !important;
+    }
+
+    [data-theme="light"] .text-dark_green {
+      color: #166534 !important;
+    }
+
+    [data-theme="light"] .nav-link {
+      color: #0f172a;
+      border-color: transparent;
+    }
+
+    [data-theme="light"] .nav-link:hover {
+      color: #052e16;
+      border-color: #86efac;
+      background: rgba(22, 163, 74, 0.12);
+    }
+
+    [data-theme="light"] .nav-link-active {
+      color: #052e16;
+      border-color: #22c55e;
+      background: rgba(34, 197, 94, 0.22);
+      box-shadow: none;
+    }
+
+    [data-theme="light"] .site-header {
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12) !important;
+    }
+
+    [data-theme="light"] .border-slate-700,
+    [data-theme="light"] .border-slate-800 {
+      border-color: #9ca3af !important;
+    }
+
+    [data-theme="light"] input,
+    [data-theme="light"] select,
+    [data-theme="light"] textarea {
+      background: #f3f4f6 !important;
+      color: #111827 !important;
+      border-color: #9ca3af !important;
+    }
+
+    [data-theme="light"] .flash-card {
+      background: #e5e7eb;
+      color: #111827;
+      border-color: #9ca3af;
+    }
+
+    [data-theme="light"] .flash-card.success {
+      background: #dcfce7;
+      color: #14532d;
+      border-color: #4ade80;
+    }
+
+    [data-theme="light"] .flash-card.error {
+      background: #fee2e2;
+      color: #7f1d1d;
+      border-color: #fca5a5;
+    }
+
+    [data-theme="light"] .text-emerald-300,
+    [data-theme="light"] .hover\:text-emerald-200:hover,
+    [data-theme="light"] .hover\:text-emerald-300:hover {
+      color: #166534 !important;
+    }
+
+    [data-theme="light"] .text-cyan-300,
+    [data-theme="light"] .hover\:text-cyan-200:hover,
+    [data-theme="light"] .hover\:text-cyan-300:hover {
+      color: #155e75 !important;
+    }
+
+    .theme-icon {
+      width: 16px;
+      height: 16px;
+      display: block;
+    }
+
+    .theme-icon-hidden {
+      display: none;
+    }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body class="text-sm antialiased">
+  <header class="site-header">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 lg:px-6">
+      <a href="{{ url_for('home') }}" class="flex items-center gap-3" aria-label="{{ site_name }} home">
+        <img src="{{ url_for('static', filename=logo_path) }}" alt="{{ site_name }} logo" class="brand-logo-desktop hidden md:block">
+        <img src="{{ url_for('static', filename=logo_path) }}" alt="{{ site_name }} logo" class="brand-logo-mobile md:hidden">
+        <div class="hidden md:block">
+          <p class="brand-wordmark text-base font-semibold">{{ site_name }}</p>
+          <p class="text-xs text-slate-400">Flask local edition</p>
+        </div>
+      </a>
+
+      <nav class="hidden items-center gap-6 lg:flex">
+        <a href="{{ url_for('home') }}" class="nav-link {{ 'nav-link-active' if active_page == 'home' else '' }}">Home</a>
+        <a href="{{ url_for('listings_page') }}" class="nav-link {{ 'nav-link-active' if active_page == 'listings' else '' }}">Listings</a>
+        {% if is_authenticated %}
+        <a href="{{ url_for('post_ad') }}" class="nav-link {{ 'nav-link-active' if active_page == 'post-ad' else '' }}">Post Ad</a>
+        {% if is_admin %}
+        <a href="{{ url_for('admin_dashboard') }}" class="nav-link {{ 'nav-link-active' if active_page == 'admin' else '' }}">Admin</a>
+        {% endif %}
+        {% endif %}
+        {% if not is_authenticated %}
+        <a href="{{ url_for('login') }}" class="nav-link {{ 'nav-link-active' if active_page == 'login' else '' }}">Login</a>
+        <a href="{{ url_for('register') }}" class="nav-link {{ 'nav-link-active' if active_page == 'register' else '' }}">Register</a>
+        {% endif %}
+      </nav>
+
+      <div class="hidden items-center gap-3 md:flex">
+        <button id="theme-toggle" type="button" class="theme-toggle-btn" aria-label="Toggle dark and light mode">
+          <svg id="theme-icon-sun" class="theme-icon theme-icon-hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 3.25a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-1.5 0V4A.75.75 0 0 1 8 3.25Zm0 7a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Zm4-2.25a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 12 8Zm-8 0a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1 0-1.5h.5A.75.75 0 0 1 4 8Zm6.03-3.28a.75.75 0 0 1 1.06 0l.35.35a.75.75 0 1 1-1.06 1.06l-.35-.35a.75.75 0 0 1 0-1.06Zm-4.06 4.06a.75.75 0 0 1 1.06 0l.35.35a.75.75 0 0 1-1.06 1.06l-.35-.35a.75.75 0 0 1 0-1.06Zm4.06 1.06a.75.75 0 0 1 0 1.06l-.35.35a.75.75 0 1 1-1.06-1.06l.35-.35a.75.75 0 0 1 1.06 0Zm-4.06-4.06a.75.75 0 0 1 0 1.06l-.35.35a.75.75 0 0 1-1.06-1.06l.35-.35a.75.75 0 0 1 1.06 0ZM8 11.5a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-1.5 0v-.5A.75.75 0 0 1 8 11.5Z"/>
+          </svg>
+          <svg id="theme-icon-moon" class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M6 1.75a.75.75 0 0 1 .94-.73A6.25 6.25 0 1 1 1.02 9.94.75.75 0 0 1 2 9a4.75 4.75 0 0 0 4.5-6.25Z"/>
+          </svg>
+        </button>
+        {% if is_authenticated %}
+        <span class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 font-medium text-slate-200">
+          Signed in as {{ current_user }} ({{ current_user_role }})
+        </span>
+        <a href="{{ url_for('cart_page') }}" class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 font-medium text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+          Cart ({{ cart_count }})
+        </a>
+        <a href="{{ url_for('orders_page') }}" class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 font-medium text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+          Orders
+        </a>
+        {% if is_admin %}
+        <a href="{{ url_for('admin_dashboard') }}" class="rounded-full border border-cyan-500/50 bg-cyan-900/20 px-4 py-2 font-semibold text-cyan-300 transition hover:border-cyan-400 hover:text-cyan-200">
+          Admin Panel
+        </a>
+        {% endif %}
+        <a href="{{ url_for('post_ad') }}" class="rounded-full border border-emerald-500/60 bg-emerald-900/30 px-4 py-2 font-semibold text-emerald-300 transition hover:border-emerald-400 hover:text-emerald-200">
+          Post Ad
+        </a>
+        <form method="post" action="{{ url_for('logout') }}">
+          <button type="submit" class="rounded-full bg-emerald-600 px-5 py-2 font-semibold text-white shadow-sm transition hover:bg-emerald-500">
+            Logout
+          </button>
+        </form>
+        {% else %}
+        <a href="{{ url_for('login') }}" class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 font-medium text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+          Login
+        </a>
+        <a href="{{ url_for('listings_page') }}" class="rounded-full bg-emerald-600 px-5 py-2 font-semibold text-white shadow-sm transition hover:bg-emerald-500">
+          Browse Ads
+        </a>
+        {% endif %}
+      </div>
+
+      <button id="mobile-menu-button" type="button" class="inline-flex rounded-full border border-slate-700 bg-slate-900 p-3 text-slate-200 lg:hidden" aria-expanded="false" aria-controls="mobile-menu">
+        <span class="sr-only">Open menu</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+      <div id="mobile-menu" class="hidden border-t border-slate-800 bg-slate-950 lg:hidden">
+      <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4">
+        <button id="theme-toggle-mobile" type="button" class="theme-toggle-btn" aria-label="Toggle dark and light mode">
+          <svg id="theme-icon-sun-mobile" class="theme-icon theme-icon-hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 3.25a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-1.5 0V4A.75.75 0 0 1 8 3.25Zm0 7a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Zm4-2.25a.75.75 0 0 1 .75-.75h.5a.75.75 0 0 1 0 1.5h-.5A.75.75 0 0 1 12 8Zm-8 0a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1 0-1.5h.5A.75.75 0 0 1 4 8Zm6.03-3.28a.75.75 0 0 1 1.06 0l.35.35a.75.75 0 1 1-1.06 1.06l-.35-.35a.75.75 0 0 1 0-1.06Zm-4.06 4.06a.75.75 0 0 1 1.06 0l.35.35a.75.75 0 0 1-1.06 1.06l-.35-.35a.75.75 0 0 1 0-1.06Zm4.06 1.06a.75.75 0 0 1 0 1.06l-.35.35a.75.75 0 1 1-1.06-1.06l.35-.35a.75.75 0 0 1 1.06 0Zm-4.06-4.06a.75.75 0 0 1 0 1.06l-.35.35a.75.75 0 0 1-1.06-1.06l.35-.35a.75.75 0 0 1 1.06 0ZM8 11.5a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-1.5 0v-.5A.75.75 0 0 1 8 11.5Z"/>
+          </svg>
+          <svg id="theme-icon-moon-mobile" class="theme-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M6 1.75a.75.75 0 0 1 .94-.73A6.25 6.25 0 1 1 1.02 9.94.75.75 0 0 1 2 9a4.75 4.75 0 0 0 4.5-6.25Z"/>
+          </svg>
+        </button>
+        <a href="{{ url_for('home') }}" class="font-medium text-slate-200">Home</a>
+        <a href="{{ url_for('listings_page') }}" class="font-medium text-slate-200">Listings</a>
+        {% if is_authenticated %}
+        <a href="{{ url_for('cart_page') }}" class="font-medium text-slate-200">Cart ({{ cart_count }})</a>
+        <a href="{{ url_for('orders_page') }}" class="font-medium text-slate-200">Orders</a>
+        <a href="{{ url_for('post_ad') }}" class="font-medium text-slate-200">Post Ad</a>
+        {% if is_admin %}
+        <a href="{{ url_for('admin_dashboard') }}" class="font-medium text-cyan-300">Admin</a>
+        {% endif %}
+        {% endif %}
+        {% if not is_authenticated %}
+        <a href="{{ url_for('login') }}" class="font-medium text-slate-200">Login</a>
+        <a href="{{ url_for('register') }}" class="font-medium text-slate-200">Register</a>
+        {% endif %}
+        {% if is_authenticated %}
+        <form method="post" action="{{ url_for('logout') }}">
+          <button type="submit" class="mt-2 rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white">Logout</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-wrap">
+      <div class="mx-auto max-w-7xl px-4 lg:px-6">
+        {% for category, message in messages %}
+          <div class="flash-card {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+
+  <footer class="bg-slate-950">
+    <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 text-sm text-slate-300 md:flex-row md:items-center md:justify-between lg:px-6">
+      <div>
+        <p class="font-semibold text-dark_green">{{ site_name }} Local Preview</p>
+        <p class="mt-1 text-slate-400">Connected pages powered by Flask and local JSON data.</p>
+      </div>
+      <a href="{{ url_for('listings_page') }}" class="rounded-full border border-slate-700 bg-slate-900 px-4 py-2 font-medium text-slate-200 transition hover:border-emerald-500 hover:text-emerald-300">
+        View all listings
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    const mobileMenuButton = document.getElementById("mobile-menu-button");
+    const mobileMenu = document.getElementById("mobile-menu");
+    if (mobileMenuButton && mobileMenu) {
+      mobileMenuButton.addEventListener("click", () => {
+        const nowHidden = mobileMenu.classList.toggle("hidden");
+        mobileMenuButton.setAttribute("aria-expanded", String(!nowHidden));
+      });
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      try {
+        localStorage.setItem("silkroad-theme", theme);
+      } catch (e) {}
+      const sun = document.getElementById("theme-icon-sun");
+      const moon = document.getElementById("theme-icon-moon");
+      const sunMobile = document.getElementById("theme-icon-sun-mobile");
+      const moonMobile = document.getElementById("theme-icon-moon-mobile");
+      const isDark = theme === "dark";
+      if (sun && moon) {
+        sun.classList.toggle("theme-icon-hidden", isDark);
+        moon.classList.toggle("theme-icon-hidden", !isDark);
+      }
+      if (sunMobile && moonMobile) {
+        sunMobile.classList.toggle("theme-icon-hidden", isDark);
+        moonMobile.classList.toggle("theme-icon-hidden", !isDark);
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme") || "dark";
+      setTheme(current === "dark" ? "light" : "dark");
+    }
+
+    const themeToggle = document.getElementById("theme-toggle");
+    const themeToggleMobile = document.getElementById("theme-toggle-mobile");
+    if (themeToggle) {
+      themeToggle.addEventListener("click", toggleTheme);
+    }
+    if (themeToggleMobile) {
+      themeToggleMobile.addEventListener("click", toggleTheme);
+    }
+    setTheme(document.documentElement.getAttribute("data-theme") || "dark");
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

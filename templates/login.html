@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site_name }} | Login{% endblock %}
+{% block description %}Secure login for {{ site_name }} local backend.{% endblock %}
+
+{% block head %}
+<style>
+  .login-page {
+    min-height: calc(100vh - 180px);
+    display: grid;
+    align-items: center;
+    background: #060606;
+    padding: 24px 16px;
+  }
+
+  .login-layout {
+    width: min(1180px, 100%);
+    margin: 0 auto;
+    display: grid;
+    gap: 24px;
+    align-items: center;
+  }
+
+  @media (min-width: 980px) {
+    .login-layout {
+      grid-template-columns: 1.1fr 0.9fr;
+      min-height: calc(100vh - 220px);
+    }
+  }
+
+  .login-visual {
+    position: relative;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    min-height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: none;
+  }
+
+  .login-visual::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(22, 163, 74, 0.2), transparent 30%),
+      radial-gradient(circle at 82% 80%, rgba(34, 197, 94, 0.14), transparent 34%);
+    pointer-events: none;
+  }
+
+  .login-visual img {
+    width: min(92%, 760px);
+    max-height: 88%;
+    object-fit: contain;
+    opacity: 1;
+    position: relative;
+    z-index: 1;
+    mix-blend-mode: lighten;
+  }
+
+  .login-glass {
+    position: relative;
+    width: min(460px, 100%);
+    justify-self: end;
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: none;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: #fff;
+  }
+
+  .login-glass h2 {
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 1px;
+    margin-bottom: 30px;
+    color: #fff;
+  }
+
+  .input-group {
+    margin-bottom: 24px;
+  }
+
+  .input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .input-group input {
+    width: 100%;
+    padding: 15px 20px;
+    background: #000 !important;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    outline: none;
+    border-radius: 35px;
+    font-size: 16px;
+    color: #f8fafc;
+    box-shadow: 0 5px 15px rgba(2, 6, 23, 0.35);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  }
+
+  .input-group input::placeholder {
+    color: rgba(203, 213, 225, 0.75);
+  }
+
+  .input-group input:focus {
+    border-color: rgba(22, 163, 74, 0.9);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2), 0 6px 20px rgba(2, 6, 23, 0.5);
+    background: #000 !important;
+  }
+
+  /* Force black fields even when browser autofill is applied */
+  .input-group input:-webkit-autofill,
+  .input-group input:-webkit-autofill:hover,
+  .input-group input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #000 inset !important;
+    -webkit-text-fill-color: #f8fafc !important;
+    caret-color: #f8fafc;
+  }
+
+  .remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .remember-forgot input[type="checkbox"] {
+    accent-color: #16a34a;
+    background: #000;
+    border: 1px solid rgba(148, 163, 184, 0.45);
+  }
+
+  .remember-forgot a {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .remember-forgot a:hover {
+    text-decoration: underline;
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(180deg, #15803d 0%, #166534 100%);
+    border: none;
+    outline: none;
+    border-radius: 35px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .login-btn:hover {
+    background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
+    transform: translateY(-2px);
+  }
+
+  .demo-creds {
+    margin-top: 18px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+  }
+
+  .flash-inline {
+    margin-bottom: 18px;
+    border-radius: 14px;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .flash-inline.error {
+    background: rgba(190, 39, 39, 0.38);
+    border: 1px solid rgba(255, 130, 130, 0.55);
+  }
+
+  .flash-inline.success {
+    background: rgba(47, 121, 47, 0.38);
+    border: 1px solid rgba(173, 255, 173, 0.55);
+  }
+
+  .oauth-divider {
+    margin: 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(203, 213, 225, 0.9);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .oauth-divider::before,
+  .oauth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(148, 163, 184, 0.4);
+  }
+
+  .google-btn {
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 13px;
+    border-radius: 35px;
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    background: #000;
+    color: #e2e8f0;
+    text-decoration: none;
+    font-weight: 600;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .google-btn:hover {
+    border-color: rgba(22, 163, 74, 0.9);
+    color: #fff;
+  }
+
+  .google-icon {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="login-page">
+  <div class="login-layout">
+    <aside class="login-visual">
+      <img src="{{ url_for('static', filename='frontend/images/silk-road-logo.png') }}" alt="Silk Road logo cover">
+    </aside>
+    <section class="login-glass">
+      <h2>Login</h2>
+      <form method="post" action="{{ url_for('login') }}" autocomplete="off">
+        <div class="input-group">
+          <label>Username</label>
+          <input type="text" name="username" required autocomplete="off" placeholder="Enter your username">
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" name="password" required autocomplete="new-password" placeholder="Enter your password">
+        </div>
+        <div class="remember-forgot">
+          <label><input type="checkbox" name="remember_me"> Remember me</label>
+          <a href="{{ url_for('forgot_password') }}">Forgot Password?</a>
+        </div>
+        <button type="submit" class="login-btn">Login</button>
+        <div class="oauth-divider">or</div>
+        <a class="google-btn" href="{{ url_for('google_auth_start') }}">
+          <svg class="google-icon" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.73 1.22 9.24 3.62l6.89-6.89C35.9 2.26 30.33 0 24 0 14.64 0 6.56 5.38 2.56 13.22l8.01 6.22C12.5 13.7 17.8 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.5 24.5c0-1.64-.15-3.21-.43-4.72H24v9.02h12.66c-.55 2.95-2.2 5.45-4.7 7.13l7.23 5.61C43.47 37.58 46.5 31.62 46.5 24.5z"/>
+            <path fill="#FBBC05" d="M10.57 28.56A14.49 14.49 0 0 1 9.5 24c0-1.58.29-3.11.8-4.56l-8.01-6.22A24.07 24.07 0 0 0 0 24c0 3.86.92 7.51 2.56 10.78l8.01-6.22z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.9-2.14 15.86-5.83l-7.23-5.61c-2.01 1.35-4.58 2.14-8.63 2.14-6.2 0-11.5-4.2-13.43-9.94l-8.01 6.22C6.56 42.62 14.64 48 24 48z"/>
+          </svg>
+          Continue with Google
+        </a>
+        {% if not google_auth_enabled %}
+        <p class="demo-creds">Google OAuth keys not set yet. Add <strong>GOOGLE_CLIENT_ID</strong> and <strong>GOOGLE_CLIENT_SECRET</strong>.</p>
+        {% endif %}
+        <p class="demo-creds">No account? <a href="{{ url_for('register') }}" style="color:#fff;text-decoration:underline;">Create one</a></p>
+      </form>
+    </section>
+  </div>
+</main>
+{% endblock %}

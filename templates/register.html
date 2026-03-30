@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site_name }} | Register{% endblock %}
+{% block description %}Create a local account on {{ site_name }}.{% endblock %}
+
+{% block head %}
+<style>
+  .auth-page {
+    min-height: calc(100vh - 180px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: linear-gradient(rgba(16, 20, 16, 0.45), rgba(16, 20, 16, 0.55)), url('{{ url_for("static", filename="login/background.jpg") }}');
+    background-size: cover;
+    background-position: center;
+    padding: 24px 16px;
+  }
+
+  .auth-glass {
+    width: min(440px, 100%);
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    background: rgba(8, 8, 8, 0.78);
+    border: 1px solid rgba(42, 42, 42, 0.9);
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.36);
+    color: #fff;
+  }
+
+  .auth-glass h2 {
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .input-group { position: relative; margin-bottom: 20px; }
+  .input-group input {
+    width: 100%;
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.86);
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    outline: none;
+    border-radius: 35px;
+    font-size: 16px;
+    color: #f8fafc;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  }
+  .input-group label {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.8);
+    pointer-events: none;
+    transition: all 0.25s ease;
+  }
+  .input-group input:focus + label,
+  .input-group input:valid + label {
+    top: 0;
+    left: 15px;
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 8px;
+    border-radius: 10px;
+    color: #fff;
+  }
+  .input-group input::placeholder { color: rgba(203, 213, 225, 0.75); }
+  .input-group input:focus {
+    border-color: rgba(22, 163, 74, 0.9);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2), 0 6px 20px rgba(2, 6, 23, 0.5);
+    background: rgba(0, 0, 0, 0.98);
+  }
+  .auth-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(180deg, #15803d 0%, #166534 100%);
+    border: none;
+    border-radius: 35px;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .auth-btn:hover { background: linear-gradient(180deg, #16a34a 0%, #15803d 100%); }
+  .auth-link { margin-top: 16px; text-align: center; font-size: 13px; color: rgba(255,255,255,0.9); }
+  .auth-link a { color: #fff; text-decoration: underline; }
+
+  .oauth-divider {
+    margin: 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(203, 213, 225, 0.9);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .oauth-divider::before,
+  .oauth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(148, 163, 184, 0.4);
+  }
+
+  .google-btn {
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 13px;
+    border-radius: 35px;
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    background: #000;
+    color: #e2e8f0;
+    text-decoration: none;
+    font-weight: 600;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .google-btn:hover {
+    border-color: rgba(22, 163, 74, 0.9);
+    color: #fff;
+  }
+
+  .google-icon {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="auth-page">
+  <section class="auth-glass">
+    <h2>Create Account</h2>
+    <form method="post" action="{{ url_for('register') }}">
+      <div class="input-group">
+        <input type="text" name="username" required minlength="3" autocomplete="username" placeholder=" ">
+        <label>Username</label>
+      </div>
+      <div class="input-group">
+        <input type="password" name="password" required minlength="6" autocomplete="new-password" placeholder=" ">
+        <label>Password</label>
+      </div>
+      <div class="input-group">
+        <input type="password" name="confirm_password" required minlength="6" autocomplete="new-password" placeholder=" ">
+        <label>Confirm Password</label>
+      </div>
+      <button type="submit" class="auth-btn">Register</button>
+      <div class="oauth-divider">or</div>
+      <a class="google-btn" href="{{ url_for('google_auth_start') }}">
+        <svg class="google-icon" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.73 1.22 9.24 3.62l6.89-6.89C35.9 2.26 30.33 0 24 0 14.64 0 6.56 5.38 2.56 13.22l8.01 6.22C12.5 13.7 17.8 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.5 24.5c0-1.64-.15-3.21-.43-4.72H24v9.02h12.66c-.55 2.95-2.2 5.45-4.7 7.13l7.23 5.61C43.47 37.58 46.5 31.62 46.5 24.5z"/>
+          <path fill="#FBBC05" d="M10.57 28.56A14.49 14.49 0 0 1 9.5 24c0-1.58.29-3.11.8-4.56l-8.01-6.22A24.07 24.07 0 0 0 0 24c0 3.86.92 7.51 2.56 10.78l8.01-6.22z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.9-2.14 15.86-5.83l-7.23-5.61c-2.01 1.35-4.58 2.14-8.63 2.14-6.2 0-11.5-4.2-13.43-9.94l-8.01 6.22C6.56 42.62 14.64 48 24 48z"/>
+        </svg>
+        Continue with Google
+      </a>
+      {% if not google_auth_enabled %}
+      <p class="auth-link">Google OAuth keys not set yet. Add <strong>GOOGLE_CLIENT_ID</strong> and <strong>GOOGLE_CLIENT_SECRET</strong>.</p>
+      {% endif %}
+      <p class="auth-link">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+    </form>
+  </section>
+</main>
+{% endblock %}
